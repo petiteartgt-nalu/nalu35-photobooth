@@ -13,18 +13,24 @@
   box-sizing: border-box;
 }
 
-body {
+html, body {
   margin: 0;
+  width: 100%;
+  min-height: 100%;
   background: #100719;
   color: white;
   font-family: 'Righteous', cursive;
+}
+
+body {
   text-align: center;
 }
 
 .app {
+  width: 100%;
+  max-width: 540px;
   height: 100vh;
   height: 100dvh;
-  max-width: 520px;
   margin: auto;
   padding: 8px 12px;
   display: flex;
@@ -34,16 +40,16 @@ body {
 }
 
 h1 {
+  margin: 4px 0 2px;
+  font-size: 26px;
   color: #ff38be;
-  font-size: 25px;
-  margin: 5px 0 2px;
   text-shadow: 0 0 12px #ff0099;
 }
 
 .subtitulo {
-  font-size: 11px;
+  margin: 0 0 8px;
   color: #76edfa;
-  margin: 0 0 7px;
+  font-size: 11px;
   letter-spacing: 2px;
 }
 
@@ -51,7 +57,7 @@ h1 {
   position: relative;
   flex: 1;
   min-height: 0;
-  max-width: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,25 +79,24 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 12px;
   font-family: 'Righteous', cursive;
   font-size: 95px;
-  font-weight: bold;
   color: white;
+  text-align: center;
+  line-height: 1.1;
   text-shadow:
     0 0 12px #ff00c8,
     0 0 28px #ff00c8,
     0 0 45px #ff00c8;
-  text-align: center;
-  padding: 12px;
-  line-height: 1.1;
   pointer-events: none;
 }
 
 #mensaje {
-  font-size: 12px;
-  color: #8df1f8;
+  min-height: 18px;
   margin: 6px 0;
-  min-height: 16px;
+  color: #8df1f8;
+  font-size: 12px;
 }
 
 .controles {
@@ -102,11 +107,11 @@ h1 {
 
 button {
   font-family: 'Righteous', cursive;
+  font-size: 14px;
+  color: white;
+  background: #3b174e;
   border: 1px solid #ff4bc9;
   border-radius: 20px;
-  background: #3b174e;
-  color: white;
-  font-size: 14px;
   padding: 11px 17px;
   margin: 3px;
   cursor: pointer;
@@ -145,10 +150,6 @@ button:disabled {
   margin: 12px auto;
 }
 
-#qrVista {
-  text-align: center;
-}
-
 #qrVista p {
   font-size: 14px;
   line-height: 1.5;
@@ -160,7 +161,13 @@ button:disabled {
 }
 
 #video {
-  display: none;
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 </style>
 </head>
@@ -197,11 +204,11 @@ button:disabled {
     <div id="qrIcono">▦</div>
 
     <p>
-      Aquí aparecerá el código QR para descargar
-      tu fotografía cuando activemos Google Drive.
+      Aquí aparecerá el código QR cuando
+      conectemos Google Drive.
     </p>
 
-    <button onclick="descargar()" class="principal">
+    <button class="principal" onclick="descargar()">
       Descargar fotografía
     </button>
   </section>
@@ -223,7 +230,7 @@ button:disabled {
     </div>
 
     <div id="controlesFoto" class="oculto">
-      <button onclick="mostrarQR()" class="principal">
+      <button class="principal" onclick="mostrarQR()">
         Siguiente ›
       </button>
 
@@ -233,7 +240,7 @@ button:disabled {
     </div>
 
     <div id="controlesQR" class="oculto">
-      <button onclick="reiniciar()" class="principal">
+      <button class="principal" onclick="reiniciar()">
         Nueva fotografía
       </button>
     </div>
@@ -260,8 +267,6 @@ let ocupado = false;
 let sesion = 0;
 let archivoFinal = null;
 
-// Ubicación aproximada de los espacios
-// transparentes dentro de los marcos.
 const zonas = {
   individual: [
     [.085, .18, .83, .64]
@@ -274,9 +279,9 @@ const zonas = {
   ]
 };
 
-function visible(id, si) {
+function visible(id, mostrar) {
   document.getElementById(id)
-    .classList.toggle("oculto", !si);
+    .classList.toggle("oculto", !mostrar);
 }
 
 function controles(nombre) {
@@ -292,10 +297,10 @@ function cargarMarco(ruta) {
     img.onload = () => resolve(img);
 
     img.onerror = () => reject(
-      new Error("No se encontró el marco: " + ruta)
+      new Error("No se encontró " + ruta)
     );
 
-    img.src = ruta + "?v=6";
+    img.src = ruta + "?v=9";
   });
 }
 
@@ -305,17 +310,21 @@ function detenerCamara() {
     camara = null;
   }
 
+  video.pause();
   video.srcObject = null;
 }
 
 async function elegir(tipo) {
   const actual = ++sesion;
 
+  detenerCamara();
+
   modo = tipo;
   capturas = [];
   archivoFinal = null;
   ocupado = false;
   fase = "cargando";
+  marco = null;
 
   visible("menu", false);
   visible("escenario", true);
@@ -333,24 +342,34 @@ async function elegir(tipo) {
 
     if (actual !== sesion) return;
 
-    lienzo.width = marco.naturalWidth;
-    lienzo.height = marco.naturalHeight;
+    // Individual: formato del marco.
+    // Cuatro: vista amplia de cámara.
+    if (tipo === "individual") {
+      lienzo.width = marco.naturalWidth;
+      lienzo.height = marco.naturalHeight;
+    } else {
+      lienzo.width = 1280;
+      lienzo.height = 960;
+    }
 
-    camara = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        facingMode: "user",
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      }
-    });
+    const nuevaCamara =
+      await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          facingMode: "user",
+          width: { ideal: 1280 },
+          height: { ideal: 960 }
+        }
+      });
 
     if (actual !== sesion) {
-      detenerCamara();
+      nuevaCamara.getTracks().forEach(t => t.stop());
       return;
     }
 
+    camara = nuevaCamara;
     video.srcObject = camara;
+
     await video.play();
 
     if (actual !== sesion) return;
@@ -358,7 +377,10 @@ async function elegir(tipo) {
     fase = "camara";
     controles("camara");
 
-    mensaje.textContent = "¡Ubícate dentro del marco!";
+    mensaje.textContent =
+      tipo === "individual"
+        ? "¡Ubícate dentro del marco!"
+        : "¡Prepárate para tus 4 poses!";
 
   } catch (error) {
     mensaje.textContent =
@@ -369,21 +391,13 @@ async function elegir(tipo) {
   }
 }
 
-function dibujarFoto(foto, zona) {
-  if (!foto || !foto.width && !foto.videoWidth) return;
-
-  const [px, py, pw, ph] = zona;
-
-  const x = px * lienzo.width;
-  const y = py * lienzo.height;
-  const w = pw * lienzo.width;
-  const h = ph * lienzo.height;
-
+function dibujarFoto(foto, x, y, w, h) {
   const iw = foto.videoWidth || foto.width;
   const ih = foto.videoHeight || foto.height;
 
-  const escala = Math.max(w / iw, h / ih);
+  if (!iw || !ih) return;
 
+  const escala = Math.max(w / iw, h / ih);
   const sw = w / escala;
   const sh = h / escala;
   const sx = (iw - sw) / 2;
@@ -391,9 +405,11 @@ function dibujarFoto(foto, zona) {
 
   ctx.save();
 
+  // Efecto espejo.
   ctx.translate(x + w, y);
   ctx.scale(-1, 1);
 
+  // Filtro vintage.
   ctx.filter =
     "sepia(25%) contrast(108%) saturate(85%)";
 
@@ -407,41 +423,71 @@ function dibujarFoto(foto, zona) {
 }
 
 function dibujarEscena() {
-  if (!marco || !lienzo.width) return;
+  if (!lienzo.width) return;
 
   ctx.clearRect(
-    0, 0, lienzo.width, lienzo.height
+    0, 0,
+    lienzo.width, lienzo.height
   );
 
   ctx.fillStyle = "#100719";
-
   ctx.fillRect(
-    0, 0, lienzo.width, lienzo.height
+    0, 0,
+    lienzo.width, lienzo.height
   );
 
-  const espacios = zonas[modo];
+  // MODO INDIVIDUAL:
+  // cámara dentro del marco.
+  if (modo === "individual") {
 
-  espacios.forEach((zona, i) => {
-    if (capturas[i]) {
-      dibujarFoto(capturas[i], zona);
+    if (capturas[0]) {
+      dibujarZona(capturas[0], zonas.individual[0]);
+
     } else if (
       fase === "camara" &&
       video.readyState >= 2
     ) {
-      dibujarFoto(video, zona);
+      dibujarZona(video, zonas.individual[0]);
     }
-  });
 
-  ctx.drawImage(
-    marco,
-    0, 0,
-    lienzo.width,
-    lienzo.height
+    if (marco) {
+      ctx.drawImage(
+        marco, 0, 0,
+        lienzo.width, lienzo.height
+      );
+    }
+
+  } else if (modo === "cuatro") {
+
+    // MODO CUATRO:
+    // cámara grande, sin marco ni divisiones.
+    if (
+      fase === "camara" &&
+      video.readyState >= 2
+    ) {
+      dibujarFoto(
+        video,
+        0, 0,
+        lienzo.width, lienzo.height
+      );
+    }
+  }
+}
+
+function dibujarZona(foto, zona) {
+  const [px, py, pw, ph] = zona;
+
+  dibujarFoto(
+    foto,
+    px * lienzo.width,
+    py * lienzo.height,
+    pw * lienzo.width,
+    ph * lienzo.height
   );
 }
 
 function animar() {
-  if (fase === "camara" || fase === "foto") {
+  if (fase === "camara") {
     dibujarEscena();
   }
 
@@ -456,28 +502,17 @@ function esperar(ms) {
   );
 }
 
-// Cuenta regresiva retro.
-// Entre fotos aparece CAMBIA DE POSE.
 async function contar(actual, cambioDePose = false) {
 
   if (cambioDePose) {
     cuenta.style.fontSize =
-      "clamp(38px, 9vw, 65px)";
-
-    cuenta.style.fontWeight = "900";
-    cuenta.style.color = "#ffffff";
-    cuenta.style.textAlign = "center";
-    cuenta.style.padding = "12px";
-    cuenta.style.lineHeight = "1.1";
-
-    cuenta.style.textShadow =
-      "0 0 12px #ff00c8, " +
-      "0 0 28px #ff00c8, " +
-      "0 0 45px #ff00c8";
+      "clamp(35px, 8vw, 65px)";
 
     cuenta.textContent = "¡CAMBIA DE POSE!";
 
     await esperar(1000);
+
+    if (actual !== sesion) return false;
   }
 
   cuenta.style.fontSize = "95px";
@@ -496,6 +531,10 @@ async function contar(actual, cambioDePose = false) {
 }
 
 function capturarFotograma() {
+  if (!video.videoWidth || !video.videoHeight) {
+    throw new Error("La cámara todavía no está lista.");
+  }
+
   const copia = document.createElement("canvas");
 
   copia.width = video.videoWidth;
@@ -509,6 +548,38 @@ function capturarFotograma() {
   );
 
   return copia;
+}
+
+function crearComposicionFinal() {
+  // Para las cuatro fotos cambiamos el lienzo
+  // al tamaño real del marco.
+  lienzo.width = marco.naturalWidth;
+  lienzo.height = marco.naturalHeight;
+
+  ctx.clearRect(
+    0, 0,
+    lienzo.width, lienzo.height
+  );
+
+  ctx.fillStyle = "#100719";
+  ctx.fillRect(
+    0, 0,
+    lienzo.width, lienzo.height
+  );
+
+  zonas[modo].forEach((zona, i) => {
+    if (capturas[i]) {
+      dibujarZona(capturas[i], zona);
+    }
+  });
+
+  // Marco encima de todas las fotos.
+  ctx.drawImage(
+    marco,
+    0, 0,
+    lienzo.width,
+    lienzo.height
+  );
 }
 
 async function tomarFotos() {
@@ -541,18 +612,19 @@ async function tomarFotos() {
 
     if (actual !== sesion) return;
 
+    // Ahora sí aparece el marco con las fotos.
     fase = "foto";
-    dibujarEscena();
+    crearComposicionFinal();
 
     archivoFinal = lienzo.toDataURL(
-      "image/jpeg", .92
+      "image/jpeg", 0.92
     );
 
     detenerCamara();
     controles("foto");
 
     mensaje.textContent =
-      "¡Así quedó tu fotografía!";
+      "¡Así quedaron tus fotografías!";
 
   } catch (error) {
     mensaje.textContent = error.message;
@@ -574,23 +646,22 @@ function mostrarQR() {
   controles("qr");
 
   mensaje.textContent =
-    "El QR se activará al conectar Google Drive.";
+    "Próximamente: QR conectado a Google Drive.";
 }
 
 function descargar() {
   if (!archivoFinal) return;
 
-  const a = document.createElement("a");
+  const enlace = document.createElement("a");
 
-  a.href = archivoFinal;
-
-  a.download =
+  enlace.href = archivoFinal;
+  enlace.download =
     "NaLu35_" + modo +
     "_" + Date.now() + ".jpg";
 
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  document.body.appendChild(enlace);
+  enlace.click();
+  enlace.remove();
 }
 
 function reiniciar() {
@@ -616,4 +687,3 @@ function reiniciar() {
 
 </body>
 </html>
-
