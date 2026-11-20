@@ -11,7 +11,7 @@
 
 <title>NaLu's 35</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Modak&display=swap" rel="stylesheet">
 
 <style>
 * {
@@ -49,9 +49,11 @@ h1 {
 
 .sub {
   margin: 0 0 8px;
-  font-size: 11px;
+  font-family: Modak, cursive;
+  font-size: 22px;
   letter-spacing: 2px;
   color: #79eaf5;
+  text-shadow: 0 0 8px #00c8e8;
 }
 
 #escenario {
@@ -102,7 +104,7 @@ h1 {
 }
 
 #cuenta.pose {
-  font-size: clamp(26px, 7vw, 48px);
+  font-size: clamp(24px, 6vw, 43px);
 }
 
 #mensaje {
@@ -112,7 +114,7 @@ h1 {
   font-size: 12px;
 }
 
-button {
+button, .botonDescarga {
   font-family: Righteous, cursive;
   background: #38174b;
   color: white;
@@ -132,7 +134,7 @@ button {
   display: none !important;
 }
 
-#menu, #qrVista {
+#menu, #qrVista, #gifVista {
   width: 100%;
   max-width: 370px;
   margin: auto;
@@ -148,20 +150,20 @@ button {
   margin: 13px auto;
 }
 
-#qrVista {
+#qrVista, #gifVista {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
 }
 
-#qrVista h2 {
+#qrVista h2, #gifVista h2 {
   margin: 0;
   color: #ff61ce;
   font-size: 22px;
 }
 
-#qrVista p {
+#qrVista p, #gifVista p {
   font-size: 13px;
   line-height: 1.45;
   margin: 0;
@@ -176,7 +178,7 @@ button {
   border-radius: 6px;
 }
 
-#qrEstado {
+#qrEstado, #gifEstado {
   color: #8ceaf4;
   font-size: 13px;
 }
@@ -195,6 +197,47 @@ button {
   color: #8ceaf4;
   font-size: 12px;
   overflow-wrap: anywhere;
+}
+
+#gifImagen {
+  display: block;
+  max-width: 100%;
+  max-height: 48vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.botonDescarga {
+  display: inline-block;
+  text-decoration: none;
+  background: #ff36b9;
+  color: #190721;
+}
+
+#gifVista button {
+  width: 100%;
+}
+
+.nota {
+  color: #d6b5df;
+  font-size: 11px !important;
+}
+
+@media (max-height: 650px) {
+  #menu, #qrVista, #gifVista {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  #menu button {
+    margin: 8px auto;
+  }
+
+  #gifImagen {
+    max-height: 38vh;
+  }
 }
 </style>
 </head>
@@ -215,6 +258,10 @@ button {
 
     <button onclick="elegir('cuatro')">
       4 FOTOGRAFÍAS
+    </button>
+
+    <button class="principal" onclick="elegir('gif')">
+      GIF ANIMADO
     </button>
   </section>
 
@@ -268,6 +315,40 @@ button {
     </button>
   </section>
 
+  <section id="gifVista" class="oculto">
+    <h2>¡Tu GIF está listo!</h2>
+
+    <div id="gifEstado">
+      Preparando animación...
+    </div>
+
+    <img
+      id="gifImagen"
+      class="oculto"
+      alt="GIF animado de NaLu's 35"
+    >
+
+    <a
+      id="gifDescarga"
+      class="botonDescarga oculto"
+      download="NaLu35_animado.gif"
+    >
+      DESCARGAR GIF
+    </a>
+
+    <p class="nota">
+      Versión de prueba: el GIF se descarga
+      directamente, todavía sin Google Drive.
+    </p>
+
+    <button
+      class="principal"
+      onclick="reiniciar()"
+    >
+      SIGUIENTE
+    </button>
+  </section>
+
   <p id="mensaje"></p>
 
   <video
@@ -296,9 +377,14 @@ button {
   <input name="token" id="campoToken">
 </form>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+
 <script>
 const APPS_SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbyYM2_azshTL_-Y4Ad3QPzl33j-Mpy7lX_AfWSnv8OH0sN_9CkIse1ARFfgTFL9o_aJ7Q/exec';
+  'https://script.google.com/macros/s/AKfycbyYM2_azshTL_-Y4Ad3QPzl33j-MPy7lX_AfWSnv8OH0sN_9CkIse1ARFfgTFL9o_aJ7Q/exec';
+
+const GIF_WORKER_URL =
+  'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js';
 
 const video = document.getElementById('video');
 const lienzo = document.getElementById('lienzo');
@@ -333,6 +419,9 @@ let temporizadorConsulta = null;
 let consultas = 0;
 let envioRealizado = false;
 
+let gifURL = null;
+let gifEnProceso = null;
+
 function visible(id, si) {
   document.getElementById(id)
     .classList.toggle('oculto', !si);
@@ -351,7 +440,7 @@ function cargarMarco(ruta) {
     img.onerror = () =>
       fail(new Error('No se encontró ' + ruta));
 
-    img.src = ruta + '?v=15';
+    img.src = ruta + '?v=17';
   });
 }
 
@@ -373,11 +462,36 @@ function cancelarTiempo() {
   temporizadorConsulta = null;
 }
 
+function limpiarGIF() {
+  if (gifEnProceso) {
+    try {
+      gifEnProceso.abort();
+    } catch (e) {}
+
+    gifEnProceso = null;
+  }
+
+  if (gifURL) {
+    URL.revokeObjectURL(gifURL);
+    gifURL = null;
+  }
+
+  const img = document.getElementById('gifImagen');
+  const descarga = document.getElementById('gifDescarga');
+
+  img.removeAttribute('src');
+  descarga.removeAttribute('href');
+
+  visible('gifImagen', false);
+  visible('gifDescarga', false);
+}
+
 async function elegir(tipo) {
   const actual = ++sesion;
 
   cancelarTiempo();
   detenerCamara();
+  limpiarGIF();
 
   modo = tipo;
   marco = null;
@@ -394,6 +508,7 @@ async function elegir(tipo) {
 
   visible('menu', false);
   visible('qrVista', false);
+  visible('gifVista', false);
   visible('escenario', true);
   visible('tomar', false);
 
@@ -401,19 +516,16 @@ async function elegir(tipo) {
 
   try {
     const nuevoMarco = await cargarMarco(
-      tipo === 'individual'
-        ? 'marco-individual.png'
-        : 'marco-cuatro.png'
+      tipo === 'cuatro'
+        ? 'marco-cuatro.png'
+        : 'marco-individual.png'
     );
 
     if (actual !== sesion) return;
 
     marco = nuevoMarco;
 
-    if (tipo === 'individual') {
-      lienzo.width = marco.naturalWidth;
-      lienzo.height = marco.naturalHeight;
-    } else {
+    if (tipo === 'cuatro') {
       const zona = zonas.cuatro[0];
 
       lienzo.width = Math.round(
@@ -423,6 +535,9 @@ async function elegir(tipo) {
       lienzo.height = Math.round(
         marco.naturalHeight * zona[3]
       );
+    } else {
+      lienzo.width = marco.naturalWidth;
+      lienzo.height = marco.naturalHeight;
     }
 
     const stream =
@@ -451,10 +566,15 @@ async function elegir(tipo) {
 
     visible('tomar', true);
 
-    mensaje.textContent =
-      tipo === 'individual'
-        ? '¡Ubícate dentro del marco!'
-        : '¡Ubícate dentro del encuadre!';
+    if (tipo === 'gif') {
+      mensaje.textContent =
+        '¡Prepárate para 6 poses diferentes!';
+    } else {
+      mensaje.textContent =
+        tipo === 'individual'
+          ? '¡Ubícate dentro del marco!'
+          : '¡Ubícate dentro del encuadre!';
+    }
 
   } catch (err) {
     mensaje.textContent =
@@ -465,7 +585,9 @@ async function elegir(tipo) {
   }
 }
 
-function dibujarFoto(foto, x, y, w, h) {
+function dibujarFotoEn(
+  contexto, foto, x, y, w, h
+) {
   const iw = foto.videoWidth || foto.width;
   const ih = foto.videoHeight || foto.height;
 
@@ -477,21 +599,25 @@ function dibujarFoto(foto, x, y, w, h) {
   const sx = (iw - sw) / 2;
   const sy = (ih - sh) / 2;
 
-  ctx.save();
+  contexto.save();
 
-  ctx.translate(x + w, y);
-  ctx.scale(-1, 1);
+  contexto.translate(x + w, y);
+  contexto.scale(-1, 1);
 
-  ctx.filter =
+  contexto.filter =
     'sepia(25%) contrast(108%) saturate(85%)';
 
-  ctx.drawImage(
+  contexto.drawImage(
     foto,
     sx, sy, sw, sh,
     0, 0, w, h
   );
 
-  ctx.restore();
+  contexto.restore();
+}
+
+function dibujarFoto(foto, x, y, w, h) {
+  dibujarFotoEn(ctx, foto, x, y, w, h);
 }
 
 function dibujarZona(foto, zona) {
@@ -522,7 +648,16 @@ function dibujarCamara() {
     lienzo.height
   );
 
-  if (modo === 'individual') {
+  if (modo === 'cuatro') {
+    if (video.readyState >= 2) {
+      dibujarFoto(
+        video,
+        0, 0,
+        lienzo.width,
+        lienzo.height
+      );
+    }
+  } else {
     if (video.readyState >= 2) {
       dibujarZona(video, zonas.individual[0]);
     }
@@ -535,14 +670,6 @@ function dibujarCamara() {
         lienzo.height
       );
     }
-
-  } else if (video.readyState >= 2) {
-    dibujarFoto(
-      video,
-      0, 0,
-      lienzo.width,
-      lienzo.height
-    );
   }
 }
 
@@ -569,7 +696,9 @@ async function contar(actual, cambio) {
 
   cuenta.classList.remove('pose');
 
-  for (let n = 3; n >= 1; n--) {
+  const inicio = modo === 'gif' ? 2 : 3;
+
+  for (let n = inicio; n >= 1; n--) {
     if (actual !== sesion) return false;
 
     cuenta.textContent = n;
@@ -638,7 +767,10 @@ async function tomarFotos() {
   visible('tomar', false);
 
   const actual = sesion;
-  const total = modo === 'individual' ? 1 : 4;
+
+  const total =
+    modo === 'gif' ? 6 :
+    modo === 'individual' ? 1 : 4;
 
   try {
     for (let i = 0; i < total; i++) {
@@ -650,7 +782,7 @@ async function tomarFotos() {
 
       const ok = await contar(
         actual,
-        modo === 'cuatro' && i > 0
+        i > 0
       );
 
       if (!ok) return;
@@ -660,6 +792,21 @@ async function tomarFotos() {
 
     if (actual !== sesion) return;
 
+    detenerCamara();
+
+    if (modo === 'gif') {
+      fase = 'generando-gif';
+
+      visible('escenario', false);
+      visible('gifVista', true);
+
+      mensaje.textContent = '';
+
+      await crearGIF(actual);
+
+      return;
+    }
+
     fase = 'resultado';
 
     componer();
@@ -667,8 +814,6 @@ async function tomarFotos() {
     archivoFinal = lienzo.toDataURL(
       'image/jpeg', .82
     );
-
-    detenerCamara();
 
     mensaje.textContent =
       '¡Así quedó tu fotografía!';
@@ -686,11 +831,178 @@ async function tomarFotos() {
 
   } catch (err) {
     console.error(err);
-    mensaje.textContent = err.message;
-    visible('tomar', true);
+
+    if (actual === sesion) {
+      mensaje.textContent = err.message;
+
+      if (modo === 'gif') {
+        document.getElementById('gifEstado')
+          .textContent = 'No se pudo crear el GIF: ' +
+          err.message;
+
+        visible('gifVista', true);
+      } else {
+        visible('tomar', true);
+      }
+    }
 
   } finally {
     ocupado = false;
+  }
+}
+
+async function obtenerWorkerGIF() {
+  const respuesta = await fetch(GIF_WORKER_URL);
+
+  if (!respuesta.ok) {
+    throw new Error(
+      'No se pudo cargar el generador de GIF.'
+    );
+  }
+
+  const codigo = await respuesta.text();
+
+  return URL.createObjectURL(
+    new Blob(
+      [codigo],
+      { type: 'text/javascript' }
+    )
+  );
+}
+
+async function crearGIF(actual) {
+  const estado =
+    document.getElementById('gifEstado');
+
+  estado.textContent =
+    'Preparando tus 6 fotografías...';
+
+  if (typeof GIF === 'undefined') {
+    throw new Error(
+      'No se cargó la biblioteca de animaciones. ' +
+      'Comprueba la conexión a internet.'
+    );
+  }
+
+  let workerURL = null;
+
+  try {
+    workerURL = await obtenerWorkerGIF();
+
+    if (actual !== sesion) return;
+
+    const ancho = 480;
+    const alto = Math.round(
+      ancho * marco.naturalHeight /
+      marco.naturalWidth
+    );
+
+    const gif = new GIF({
+      workers: 2,
+      quality: 12,
+      width: ancho,
+      height: alto,
+      repeat: 0,
+      workerScript: workerURL,
+      background: '#100719'
+    });
+
+    gifEnProceso = gif;
+
+    const zona = zonas.individual[0];
+
+    for (let i = 0; i < 6; i++) {
+      if (actual !== sesion) return;
+
+      const cuadro =
+        document.createElement('canvas');
+
+      cuadro.width = ancho;
+      cuadro.height = alto;
+
+      const c = cuadro.getContext('2d');
+
+      c.fillStyle = '#100719';
+      c.fillRect(0, 0, ancho, alto);
+
+      dibujarFotoEn(
+        c,
+        capturas[i],
+        zona[0] * ancho,
+        zona[1] * alto,
+        zona[2] * ancho,
+        zona[3] * alto
+      );
+
+      c.drawImage(
+        marco,
+        0, 0,
+        ancho, alto
+      );
+
+      gif.addFrame(cuadro, {
+        copy: true,
+        delay: 3000
+      });
+
+      estado.textContent =
+        'Preparando fotografía ' +
+        (i + 1) + ' de 6...';
+    }
+
+    const blob = await new Promise(
+      (resolver, rechazar) => {
+        gif.on('progress', progreso => {
+          if (actual !== sesion) return;
+
+          estado.textContent =
+            'Creando GIF... ' +
+            Math.round(progreso * 100) + '%';
+        });
+
+        gif.on('finished', resolver);
+
+        gif.on('abort', () => {
+          rechazar(
+            new Error('Generación cancelada.')
+          );
+        });
+
+        try {
+          gif.render();
+        } catch (error) {
+          rechazar(error);
+        }
+      }
+    );
+
+    if (actual !== sesion) return;
+
+    gifURL = URL.createObjectURL(blob);
+
+    const img =
+      document.getElementById('gifImagen');
+
+    const descarga =
+      document.getElementById('gifDescarga');
+
+    img.src = gifURL;
+    descarga.href = gifURL;
+
+    visible('gifImagen', true);
+    visible('gifDescarga', true);
+
+    estado.textContent =
+      '¡Listo! Tus 6 fotos están animadas.';
+
+    fase = 'gif-listo';
+
+  } finally {
+    gifEnProceso = null;
+
+    if (workerURL) {
+      URL.revokeObjectURL(workerURL);
+    }
   }
 }
 
@@ -862,6 +1174,7 @@ function reiniciar() {
 
   cancelarTiempo();
   detenerCamara();
+  limpiarGIF();
 
   fase = 'menu';
   ocupado = false;
@@ -878,9 +1191,11 @@ function reiniciar() {
 
   visible('escenario', false);
   visible('qrVista', false);
+  visible('gifVista', false);
   visible('tomar', false);
   visible('menu', true);
 }
 </script>
+
 </body>
 </html>
