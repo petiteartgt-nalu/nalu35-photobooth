@@ -8,15 +8,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="NaLu 35">
-
 <title>NaLu's 35</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Modak&display=swap" rel="stylesheet">
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html, body {
   margin: 0;
@@ -130,9 +127,7 @@ button, .botonDescarga {
   color: #190721;
 }
 
-.oculto {
-  display: none !important;
-}
+.oculto { display: none !important; }
 
 #menu, #qrVista, #gifVista {
   width: 100%;
@@ -216,9 +211,7 @@ button, .botonDescarga {
   color: #190721;
 }
 
-#gifVista button {
-  width: 100%;
-}
+#gifVista button { width: 100%; }
 
 .nota {
   color: #d6b5df;
@@ -231,19 +224,13 @@ button, .botonDescarga {
     gap: 8px;
   }
 
-  #menu button {
-    margin: 8px auto;
-  }
-
-  #gifImagen {
-    max-height: 38vh;
-  }
+  #menu button { margin: 8px auto; }
+  #gifImagen { max-height: 38vh; }
 }
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
   <h1>NaLu's 35</h1>
@@ -251,128 +238,56 @@ button, .botonDescarga {
 
   <section id="menu">
     <h2>Elige tu fotografía</h2>
-
-    <button onclick="elegir('individual')">
-      1 FOTOGRAFÍA
-    </button>
-
-    <button onclick="elegir('cuatro')">
-      4 FOTOGRAFÍAS
-    </button>
-
-    <button class="principal" onclick="elegir('gif')">
-      GIF ANIMADO
-    </button>
+    <button onclick="elegir('individual')">1 FOTOGRAFÍA</button>
+    <button onclick="elegir('cuatro')">4 FOTOGRAFÍAS</button>
+    <button class="principal" onclick="elegir('gif')">GIF ANIMADO</button>
   </section>
 
   <div id="escenario" class="oculto">
     <canvas id="lienzo"></canvas>
-
     <div id="superposicion">
-      <button
-        id="tomar"
-        class="principal oculto"
-        onclick="tomarFotos()"
-      >
+      <button id="tomar" class="principal oculto" onclick="tomarFotos()">
         TOMAR FOTO
       </button>
-
       <div id="cuenta"></div>
     </div>
   </div>
 
   <section id="qrVista" class="oculto">
     <h2>¡Tu foto está lista!</h2>
-
-    <div id="qrEstado">
-      Preparando QR...
-    </div>
-
-    <img
-      id="qrImagen"
-      class="oculto"
-      alt="Código QR de la fotografía"
-    >
-
-    <a
-      id="qrEnlace"
-      class="oculto"
-      target="_blank"
-      rel="noopener"
-    >
+    <div id="qrEstado">Preparando QR...</div>
+    <img id="qrImagen" class="oculto" alt="Código QR de la fotografía">
+    <a id="qrEnlace" class="oculto" target="_blank" rel="noopener">
       Abrir fotografía
     </a>
-
-    <p>
-      Escanea el QR para abrir y descargar tu fotografía.
-    </p>
-
-    <button
-      class="principal"
-      onclick="reiniciar()"
-    >
-      SIGUIENTE
-    </button>
+    <p>Escanea el QR para abrir y descargar tu fotografía.</p>
+    <button class="principal" onclick="reiniciar()">SIGUIENTE</button>
   </section>
 
   <section id="gifVista" class="oculto">
     <h2>¡Tu GIF está listo!</h2>
-
-    <div id="gifEstado">
-      Preparando animación...
-    </div>
-
-    <img
-      id="gifImagen"
-      class="oculto"
-      alt="GIF animado de NaLu's 35"
-    >
-
-    <a
-      id="gifDescarga"
-      class="botonDescarga oculto"
-      download="NaLu35_animado.gif"
-    >
+    <div id="gifEstado">Preparando animación...</div>
+    <img id="gifImagen" class="oculto" alt="GIF animado de NaLu's 35">
+    <a id="gifDescarga" class="botonDescarga oculto"
+       download="NaLu35_animado.gif">
       DESCARGAR GIF
     </a>
-
     <p class="nota">
-      Versión de prueba: el GIF se descarga
-      directamente, todavía sin Google Drive.
+      Versión de prueba: el GIF se descarga directamente,
+      todavía sin Google Drive.
     </p>
-
-    <button
-      class="principal"
-      onclick="reiniciar()"
-    >
-      SIGUIENTE
-    </button>
+    <button class="principal" onclick="reiniciar()">SIGUIENTE</button>
   </section>
 
   <p id="mensaje"></p>
-
-  <video
-    id="video"
-    autoplay
-    muted
-    playsinline
-  ></video>
-
+  <video id="video" autoplay muted playsinline></video>
 </div>
 
-<iframe
-  id="envioFrame"
-  name="envioFrame"
-  style="display:none"
-  title="Guardado de fotografía"
-></iframe>
+<iframe id="envioFrame" name="envioFrame" style="display:none"
+        title="Guardado de fotografía"></iframe>
 
-<form
-  id="envioForm"
-  method="POST"
-  target="envioFrame"
-  style="display:none"
->
+<form id="envioForm" method="POST" target="envioFrame"
+      style="display:none">
   <input name="foto" id="campoFoto">
   <input name="token" id="campoToken">
 </form>
@@ -381,7 +296,7 @@ button, .botonDescarga {
 
 <script>
 const APPS_SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbyYM2_azshTL_-Y4Ad3QPzl33j-MPy7lX_AfWSnv8OH0sN_9CkIse1ARFfgTFL9o_aJ7Q/exec';
+  'https://script.google.com/macros/s/AKfycbyYM2_azshTL_-Y4Ad3QPzl33j-Mpy7lX_AfWSnv8OH0sN_9CkIse1ARFfgTFL9o_aJ7Q/exec';
 
 const GIF_WORKER_URL =
   'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js';
@@ -393,9 +308,7 @@ const mensaje = document.getElementById('mensaje');
 const cuenta = document.getElementById('cuenta');
 
 const zonas = {
-  individual: [
-    [.085, .18, .83, .64]
-  ],
+  individual: [[.085, .18, .83, .64]],
   cuatro: [
     [.080, .166, .390, .305],
     [.530, .166, .390, .305],
@@ -418,13 +331,11 @@ let temporizadorQR = null;
 let temporizadorConsulta = null;
 let consultas = 0;
 let envioRealizado = false;
-
 let gifURL = null;
 let gifEnProceso = null;
 
 function visible(id, si) {
-  document.getElementById(id)
-    .classList.toggle('oculto', !si);
+  document.getElementById(id).classList.toggle('oculto', !si);
 }
 
 function esperar(ms) {
@@ -434,13 +345,9 @@ function esperar(ms) {
 function cargarMarco(ruta) {
   return new Promise((ok, fail) => {
     const img = new Image();
-
     img.onload = () => ok(img);
-
-    img.onerror = () =>
-      fail(new Error('No se encontró ' + ruta));
-
-    img.src = ruta + '?v=17';
+    img.onerror = () => fail(new Error('No se encontró ' + ruta));
+    img.src = ruta + '?v=18';
   });
 }
 
@@ -449,7 +356,6 @@ function detenerCamara() {
     camara.getTracks().forEach(t => t.stop());
     camara = null;
   }
-
   video.pause();
   video.srcObject = null;
 }
@@ -457,17 +363,13 @@ function detenerCamara() {
 function cancelarTiempo() {
   clearTimeout(temporizadorQR);
   clearTimeout(temporizadorConsulta);
-
   temporizadorQR = null;
   temporizadorConsulta = null;
 }
 
 function limpiarGIF() {
   if (gifEnProceso) {
-    try {
-      gifEnProceso.abort();
-    } catch (e) {}
-
+    try { gifEnProceso.abort(); } catch (e) {}
     gifEnProceso = null;
   }
 
@@ -476,19 +378,14 @@ function limpiarGIF() {
     gifURL = null;
   }
 
-  const img = document.getElementById('gifImagen');
-  const descarga = document.getElementById('gifDescarga');
-
-  img.removeAttribute('src');
-  descarga.removeAttribute('href');
-
+  document.getElementById('gifImagen').removeAttribute('src');
+  document.getElementById('gifDescarga').removeAttribute('href');
   visible('gifImagen', false);
   visible('gifDescarga', false);
 }
 
 async function elegir(tipo) {
   const actual = ++sesion;
-
   cancelarTiempo();
   detenerCamara();
   limpiarGIF();
@@ -503,7 +400,6 @@ async function elegir(tipo) {
   consultas = 0;
   ocupado = false;
   fase = 'cargando';
-
   cuenta.textContent = '';
 
   visible('menu', false);
@@ -511,44 +407,33 @@ async function elegir(tipo) {
   visible('gifVista', false);
   visible('escenario', true);
   visible('tomar', false);
-
   mensaje.textContent = 'Preparando cámara...';
 
   try {
     const nuevoMarco = await cargarMarco(
-      tipo === 'cuatro'
-        ? 'marco-cuatro.png'
-        : 'marco-individual.png'
+      tipo === 'cuatro' ? 'marco-cuatro.png' : 'marco-individual.png'
     );
 
     if (actual !== sesion) return;
-
     marco = nuevoMarco;
 
     if (tipo === 'cuatro') {
       const zona = zonas.cuatro[0];
-
-      lienzo.width = Math.round(
-        marco.naturalWidth * zona[2]
-      );
-
-      lienzo.height = Math.round(
-        marco.naturalHeight * zona[3]
-      );
+      lienzo.width = Math.round(marco.naturalWidth * zona[2]);
+      lienzo.height = Math.round(marco.naturalHeight * zona[3]);
     } else {
       lienzo.width = marco.naturalWidth;
       lienzo.height = marco.naturalHeight;
     }
 
-    const stream =
-      await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-          facingMode: 'user',
-          width: { ideal: 1280 },
-          height: { ideal: 960 }
-        }
-      });
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: 'user',
+        width: { ideal: 1280 },
+        height: { ideal: 960 }
+      }
+    });
 
     if (actual !== sesion) {
       stream.getTracks().forEach(t => t.stop());
@@ -557,40 +442,28 @@ async function elegir(tipo) {
 
     camara = stream;
     video.srcObject = stream;
-
     await video.play();
 
     if (actual !== sesion) return;
-
     fase = 'camara';
-
     visible('tomar', true);
 
-    if (tipo === 'gif') {
-      mensaje.textContent =
-        '¡Prepárate para 6 poses diferentes!';
-    } else {
-      mensaje.textContent =
-        tipo === 'individual'
+    mensaje.textContent =
+      tipo === 'gif'
+        ? '¡Prepárate para 6 poses diferentes!'
+        : tipo === 'individual'
           ? '¡Ubícate dentro del marco!'
           : '¡Ubícate dentro del encuadre!';
-    }
 
   } catch (err) {
-    mensaje.textContent =
-      'No se pudo iniciar la cámara: ' +
-      err.message;
-
+    mensaje.textContent = 'No se pudo iniciar la cámara: ' + err.message;
     console.error(err);
   }
 }
 
-function dibujarFotoEn(
-  contexto, foto, x, y, w, h
-) {
+function dibujarFotoEn(contexto, foto, x, y, w, h) {
   const iw = foto.videoWidth || foto.width;
   const ih = foto.videoHeight || foto.height;
-
   if (!iw || !ih) return;
 
   const escala = Math.max(w / iw, h / ih);
@@ -600,19 +473,10 @@ function dibujarFotoEn(
   const sy = (ih - sh) / 2;
 
   contexto.save();
-
   contexto.translate(x + w, y);
   contexto.scale(-1, 1);
-
-  contexto.filter =
-    'sepia(25%) contrast(108%) saturate(85%)';
-
-  contexto.drawImage(
-    foto,
-    sx, sy, sw, sh,
-    0, 0, w, h
-  );
-
+  contexto.filter = 'sepia(25%) contrast(108%) saturate(85%)';
+  contexto.drawImage(foto, sx, sy, sw, sh, 0, 0, w, h);
   contexto.restore();
 }
 
@@ -622,7 +486,6 @@ function dibujarFoto(foto, x, y, w, h) {
 
 function dibujarZona(foto, zona) {
   const [x, y, w, h] = zona;
-
   dibujarFoto(
     foto,
     x * lienzo.width,
@@ -635,198 +498,116 @@ function dibujarZona(foto, zona) {
 function dibujarCamara() {
   if (!lienzo.width) return;
 
-  ctx.clearRect(
-    0, 0,
-    lienzo.width, lienzo.height
-  );
-
+  ctx.clearRect(0, 0, lienzo.width, lienzo.height);
   ctx.fillStyle = '#100719';
-
-  ctx.fillRect(
-    0, 0,
-    lienzo.width,
-    lienzo.height
-  );
+  ctx.fillRect(0, 0, lienzo.width, lienzo.height);
 
   if (modo === 'cuatro') {
     if (video.readyState >= 2) {
-      dibujarFoto(
-        video,
-        0, 0,
-        lienzo.width,
-        lienzo.height
-      );
+      dibujarFoto(video, 0, 0, lienzo.width, lienzo.height);
     }
   } else {
     if (video.readyState >= 2) {
       dibujarZona(video, zonas.individual[0]);
     }
-
     if (marco) {
-      ctx.drawImage(
-        marco,
-        0, 0,
-        lienzo.width,
-        lienzo.height
-      );
+      ctx.drawImage(marco, 0, 0, lienzo.width, lienzo.height);
     }
   }
 }
 
 function animar() {
-  if (fase === 'camara') {
-    dibujarCamara();
-  }
-
+  if (fase === 'camara') dibujarCamara();
   requestAnimationFrame(animar);
 }
-
 requestAnimationFrame(animar);
 
 async function contar(actual, cambio) {
   cuenta.classList.add('pose');
-
-  cuenta.textContent = cambio
-    ? '¡CAMBIA DE POSE!'
-    : '¡PREPÁRATE!';
-
+  cuenta.textContent = cambio ? '¡CAMBIA DE POSE!' : '¡PREPÁRATE!';
   await esperar(1000);
 
   if (actual !== sesion) return false;
-
   cuenta.classList.remove('pose');
 
   const inicio = modo === 'gif' ? 2 : 3;
 
   for (let n = inicio; n >= 1; n--) {
     if (actual !== sesion) return false;
-
     cuenta.textContent = n;
-
     await esperar(1000);
   }
 
   if (actual !== sesion) return false;
-
   cuenta.textContent = '';
   return true;
 }
 
 function capturar() {
   if (!video.videoWidth || !video.videoHeight) {
-    throw new Error(
-      'La cámara todavía no está lista.'
-    );
+    throw new Error('La cámara todavía no está lista.');
   }
 
   const copia = document.createElement('canvas');
-
   copia.width = video.videoWidth;
   copia.height = video.videoHeight;
-
   copia.getContext('2d').drawImage(
-    video,
-    0, 0,
-    copia.width,
-    copia.height
+    video, 0, 0, copia.width, copia.height
   );
-
   return copia;
 }
 
 function componer() {
   lienzo.width = marco.naturalWidth;
   lienzo.height = marco.naturalHeight;
-
   ctx.fillStyle = '#100719';
-
-  ctx.fillRect(
-    0, 0,
-    lienzo.width,
-    lienzo.height
-  );
+  ctx.fillRect(0, 0, lienzo.width, lienzo.height);
 
   zonas[modo].forEach((zona, i) => {
-    if (capturas[i]) {
-      dibujarZona(capturas[i], zona);
-    }
+    if (capturas[i]) dibujarZona(capturas[i], zona);
   });
 
-  ctx.drawImage(
-    marco,
-    0, 0,
-    lienzo.width,
-    lienzo.height
-  );
+  ctx.drawImage(marco, 0, 0, lienzo.width, lienzo.height);
 }
 
 async function tomarFotos() {
   if (ocupado || fase !== 'camara') return;
-
   ocupado = true;
   visible('tomar', false);
 
   const actual = sesion;
-
-  const total =
-    modo === 'gif' ? 6 :
-    modo === 'individual' ? 1 : 4;
+  const total = modo === 'gif' ? 6 : modo === 'individual' ? 1 : 4;
 
   try {
     for (let i = 0; i < total; i++) {
       if (actual !== sesion) return;
 
-      mensaje.textContent =
-        'Fotografía ' + (i + 1) +
-        ' de ' + total;
-
-      const ok = await contar(
-        actual,
-        i > 0
-      );
-
+      mensaje.textContent = 'Fotografía ' + (i + 1) + ' de ' + total;
+      const ok = await contar(actual, i > 0);
       if (!ok) return;
-
       capturas.push(capturar());
     }
 
     if (actual !== sesion) return;
-
     detenerCamara();
 
     if (modo === 'gif') {
       fase = 'generando-gif';
-
       visible('escenario', false);
       visible('gifVista', true);
-
       mensaje.textContent = '';
-
       await crearGIF(actual);
-
       return;
     }
 
     fase = 'resultado';
-
     componer();
-
-    archivoFinal = lienzo.toDataURL(
-      'image/jpeg', .82
-    );
-
-    mensaje.textContent =
-      '¡Así quedó tu fotografía!';
-
+    archivoFinal = lienzo.toDataURL('image/jpeg', .82);
+    mensaje.textContent = '¡Así quedó tu fotografía!';
     iniciarGuardado();
 
     temporizadorQR = setTimeout(() => {
-      if (
-        actual === sesion &&
-        fase === 'resultado'
-      ) {
-        pasarAQR();
-      }
+      if (actual === sesion && fase === 'resultado') pasarAQR();
     }, 5000);
 
   } catch (err) {
@@ -836,16 +617,13 @@ async function tomarFotos() {
       mensaje.textContent = err.message;
 
       if (modo === 'gif') {
-        document.getElementById('gifEstado')
-          .textContent = 'No se pudo crear el GIF: ' +
-          err.message;
-
+        document.getElementById('gifEstado').textContent =
+          'No se pudo crear el GIF: ' + err.message;
         visible('gifVista', true);
       } else {
         visible('tomar', true);
       }
     }
-
   } finally {
     ocupado = false;
   }
@@ -853,34 +631,22 @@ async function tomarFotos() {
 
 async function obtenerWorkerGIF() {
   const respuesta = await fetch(GIF_WORKER_URL);
-
   if (!respuesta.ok) {
-    throw new Error(
-      'No se pudo cargar el generador de GIF.'
-    );
+    throw new Error('No se pudo cargar el generador de GIF.');
   }
-
   const codigo = await respuesta.text();
-
   return URL.createObjectURL(
-    new Blob(
-      [codigo],
-      { type: 'text/javascript' }
-    )
+    new Blob([codigo], { type: 'text/javascript' })
   );
 }
 
 async function crearGIF(actual) {
-  const estado =
-    document.getElementById('gifEstado');
-
-  estado.textContent =
-    'Preparando tus 6 fotografías...';
+  const estado = document.getElementById('gifEstado');
+  estado.textContent = 'Preparando tus 6 fotografías...';
 
   if (typeof GIF === 'undefined') {
     throw new Error(
-      'No se cargó la biblioteca de animaciones. ' +
-      'Comprueba la conexión a internet.'
+      'No se cargó la biblioteca de animaciones. Comprueba internet.'
     );
   }
 
@@ -888,13 +654,11 @@ async function crearGIF(actual) {
 
   try {
     workerURL = await obtenerWorkerGIF();
-
     if (actual !== sesion) return;
 
     const ancho = 480;
     const alto = Math.round(
-      ancho * marco.naturalHeight /
-      marco.naturalWidth
+      ancho * marco.naturalHeight / marco.naturalWidth
     );
 
     const gif = new GIF({
@@ -908,83 +672,73 @@ async function crearGIF(actual) {
     });
 
     gifEnProceso = gif;
-
     const zona = zonas.individual[0];
 
-    for (let i = 0; i < 6; i++) {
-      if (actual !== sesion) return;
+    /*
+      6 fotografías originales.
+      Cada una aparece 1 segundo.
+      Repetimos la secuencia 3 veces.
+      Total: 18 segundos por ciclo.
+    */
+    for (let vuelta = 0; vuelta < 3; vuelta++) {
+      for (let i = 0; i < 6; i++) {
+        if (actual !== sesion) return;
 
-      const cuadro =
-        document.createElement('canvas');
+        const cuadro = document.createElement('canvas');
+        cuadro.width = ancho;
+        cuadro.height = alto;
 
-      cuadro.width = ancho;
-      cuadro.height = alto;
+        const c = cuadro.getContext('2d');
+        c.fillStyle = '#100719';
+        c.fillRect(0, 0, ancho, alto);
 
-      const c = cuadro.getContext('2d');
+        dibujarFotoEn(
+          c,
+          capturas[i],
+          zona[0] * ancho,
+          zona[1] * alto,
+          zona[2] * ancho,
+          zona[3] * alto
+        );
 
-      c.fillStyle = '#100719';
-      c.fillRect(0, 0, ancho, alto);
+        c.drawImage(marco, 0, 0, ancho, alto);
 
-      dibujarFotoEn(
-        c,
-        capturas[i],
-        zona[0] * ancho,
-        zona[1] * alto,
-        zona[2] * ancho,
-        zona[3] * alto
-      );
+        gif.addFrame(cuadro, {
+          copy: true,
+          delay: 1000
+        });
 
-      c.drawImage(
-        marco,
-        0, 0,
-        ancho, alto
-      );
-
-      gif.addFrame(cuadro, {
-        copy: true,
-        delay: 3000
-      });
-
-      estado.textContent =
-        'Preparando fotografía ' +
-        (i + 1) + ' de 6...';
+        estado.textContent =
+          'Preparando vuelta ' + (vuelta + 1) +
+          ' de 3, foto ' + (i + 1) + ' de 6...';
+      }
     }
 
-    const blob = await new Promise(
-      (resolver, rechazar) => {
-        gif.on('progress', progreso => {
-          if (actual !== sesion) return;
+    const blob = await new Promise((resolver, rechazar) => {
+      gif.on('progress', progreso => {
+        if (actual !== sesion) return;
+        estado.textContent =
+          'Creando GIF... ' + Math.round(progreso * 100) + '%';
+      });
 
-          estado.textContent =
-            'Creando GIF... ' +
-            Math.round(progreso * 100) + '%';
-        });
+      gif.on('finished', resolver);
+      gif.on('abort', () => {
+        rechazar(new Error('Generación cancelada.'));
+      });
 
-        gif.on('finished', resolver);
-
-        gif.on('abort', () => {
-          rechazar(
-            new Error('Generación cancelada.')
-          );
-        });
-
-        try {
-          gif.render();
-        } catch (error) {
-          rechazar(error);
-        }
+      try {
+        gif.render();
+      } catch (error) {
+        rechazar(error);
       }
-    );
+    });
 
     if (actual !== sesion) return;
 
     gifURL = URL.createObjectURL(blob);
 
-    const img =
-      document.getElementById('gifImagen');
-
-    const descarga =
-      document.getElementById('gifDescarga');
+    const img = document.getElementById('gifImagen');
+    const descarga = document.getElementById('gifDescarga');
 
     img.src = gifURL;
     descarga.href = gifURL;
@@ -992,24 +746,18 @@ async function crearGIF(actual) {
     visible('gifImagen', true);
     visible('gifDescarga', true);
 
-    estado.textContent =
-      '¡Listo! Tus 6 fotos están animadas.';
-
+    estado.textContent = '¡Listo! Tu GIF tiene 3 vueltas animadas.';
     fase = 'gif-listo';
 
   } finally {
     gifEnProceso = null;
-
-    if (workerURL) {
-      URL.revokeObjectURL(workerURL);
-    }
+    if (workerURL) URL.revokeObjectURL(workerURL);
   }
 }
 
 function generarToken() {
   const bytes = new Uint8Array(16);
   crypto.getRandomValues(bytes);
-
   return Array.from(
     bytes,
     b => b.toString(16).padStart(2, '0')
@@ -1023,17 +771,12 @@ function iniciarGuardado() {
   tokenActual = generarToken();
   consultas = 0;
 
-  document.getElementById('envioForm').action =
-    APPS_SCRIPT_URL;
-
+  document.getElementById('envioForm').action = APPS_SCRIPT_URL;
   document.getElementById('campoFoto').value =
     archivoFinal.split(',')[1];
-
-  document.getElementById('campoToken').value =
-    tokenActual;
+  document.getElementById('campoToken').value = tokenActual;
 
   document.getElementById('envioForm').submit();
-
   consultarGuardado();
 }
 
@@ -1043,10 +786,8 @@ function consultarGuardado() {
   if (consultas >= 30) {
     guardado = {
       ok: false,
-      mensaje:
-        'No se pudo confirmar el guardado. Revisa Google Drive.'
+      mensaje: 'No se pudo confirmar el guardado. Revisa Google Drive.'
     };
-
     if (fase === 'qr') actualizarQR();
     return;
   }
@@ -1056,28 +797,21 @@ function consultarGuardado() {
   const tokenConsultado = tokenActual;
   const callback = 'naluRespuesta_' + consultas;
   const script = document.createElement('script');
-
   let respondio = false;
 
   window[callback] = function(resultado) {
     if (respondio) return;
     respondio = true;
-
     script.remove();
     delete window[callback];
 
     if (tokenConsultado !== tokenActual) return;
 
     if (resultado.pendiente) {
-      temporizadorConsulta = setTimeout(
-        consultarGuardado,
-        1000
-      );
+      temporizadorConsulta = setTimeout(consultarGuardado, 1000);
     } else {
       guardado = resultado;
-
       document.getElementById('campoFoto').value = '';
-
       if (fase === 'qr') actualizarQR();
     }
   };
@@ -1085,16 +819,11 @@ function consultarGuardado() {
   script.onerror = function() {
     if (respondio) return;
     respondio = true;
-
     script.remove();
     delete window[callback];
 
     if (tokenConsultado !== tokenActual) return;
-
-    temporizadorConsulta = setTimeout(
-      consultarGuardado,
-      1500
-    );
+    temporizadorConsulta = setTimeout(consultarGuardado, 1500);
   };
 
   script.src =
@@ -1108,39 +837,24 @@ function consultarGuardado() {
 
 function pasarAQR() {
   if (!archivoFinal) return;
-
   clearTimeout(temporizadorQR);
-
   fase = 'qr';
-
   visible('escenario', false);
   visible('qrVista', true);
-
   mensaje.textContent = '';
-
   actualizarQR();
 }
 
 function actualizarQR() {
-  const estado =
-    document.getElementById('qrEstado');
-
-  const img =
-    document.getElementById('qrImagen');
-
-  const link =
-    document.getElementById('qrEnlace');
+  const estado = document.getElementById('qrEstado');
+  const img = document.getElementById('qrImagen');
+  const link = document.getElementById('qrEnlace');
 
   visible('qrImagen', false);
   visible('qrEnlace', false);
 
-  if (
-    guardado &&
-    guardado.ok &&
-    guardado.url
-  ) {
-    estado.textContent =
-      '¡Fotografía guardada! Escanea tu QR.';
+  if (guardado && guardado.ok && guardado.url) {
+    estado.textContent = '¡Fotografía guardada! Escanea tu QR.';
 
     img.src =
       'https://api.qrserver.com/v1/create-qr-code/' +
@@ -1148,30 +862,20 @@ function actualizarQR() {
       encodeURIComponent(guardado.url);
 
     visible('qrImagen', true);
-
     link.href = guardado.url;
-    link.textContent =
-      'Abrir fotografía en Drive';
-
+    link.textContent = 'Abrir fotografía en Drive';
     visible('qrEnlace', true);
 
-  } else if (
-    guardado &&
-    !guardado.ok
-  ) {
+  } else if (guardado && !guardado.ok) {
     estado.textContent =
-      'No se pudo confirmar la fotografía: ' +
-      guardado.mensaje;
-
+      'No se pudo confirmar la fotografía: ' + guardado.mensaje;
   } else {
-    estado.textContent =
-      'Preparando tu código QR...';
+    estado.textContent = 'Preparando tu código QR...';
   }
 }
 
 function reiniciar() {
   ++sesion;
-
   cancelarTiempo();
   detenerCamara();
   limpiarGIF();
@@ -1196,6 +900,5 @@ function reiniciar() {
   visible('menu', true);
 }
 </script>
-
 </body>
 </html>
