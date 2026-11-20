@@ -223,6 +223,22 @@ button {
   border-radius: 6px;
 }
 
+/* FLASH DE CÁMARA */
+#flash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 130ms ease-out;
+}
+
+#flash.activo {
+  opacity: 1;
+  transition: none;
+}
+
 @media (max-height: 650px) {
   #menu, #qrVista { padding: 12px; }
   #menu button { margin: 8px auto; }
@@ -274,6 +290,9 @@ button {
   <video id="video" autoplay muted playsinline></video>
 </div>
 
+<!-- Destello blanco independiente de las fotografías -->
+<div id="flash" aria-hidden="true"></div>
+
 <iframe id="envioFrame" name="envioFrame" style="display:none"
         title="Guardado de archivo"></iframe>
 
@@ -298,6 +317,7 @@ const lienzo = document.getElementById('lienzo');
 const ctx = lienzo.getContext('2d');
 const mensaje = document.getElementById('mensaje');
 const cuenta = document.getElementById('cuenta');
+const flash = document.getElementById('flash');
 
 const zonas = {
   individual: [[.085, .18, .83, .64]],
@@ -335,12 +355,25 @@ function esperar(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
+/* FLASH RÁPIDO JUSTO DESPUÉS DE CAPTURAR */
+async function mostrarFlash(actual) {
+  if (actual !== sesion) return;
+
+  flash.classList.add('activo');
+
+  await esperar(130);
+
+  flash.classList.remove('activo');
+
+  await esperar(180);
+}
+
 function cargarMarco(ruta) {
   return new Promise((ok, fail) => {
     const img = new Image();
     img.onload = () => ok(img);
     img.onerror = () => fail(new Error('No se encontró ' + ruta));
-    img.src = ruta + '?v=23';
+    img.src = ruta + '?v=24';
   });
 }
 
@@ -380,6 +413,8 @@ async function elegir(tipo) {
   cancelarTiempo();
   detenerCamara();
   limpiarGIF();
+
+  flash.classList.remove('activo');
 
   modo = tipo;
   marco = null;
@@ -579,9 +614,18 @@ async function tomarFotos() {
       if (actual !== sesion) return;
 
       mensaje.textContent = 'Fotografía ' + (i + 1) + ' de ' + total;
+
       const ok = await contar(actual, i > 0);
       if (!ok) return;
-      capturas.push(capturar());
+
+      // Capturamos primero, sin el destello.
+      const fotografia = capturar();
+      capturas.push(fotografia);
+
+      // Luego mostramos el flash blanco.
+      await mostrarFlash(actual);
+
+      if (actual !== sesion) return;
     }
 
     if (actual !== sesion) return;
@@ -902,6 +946,8 @@ function reiniciar() {
   cancelarTiempo();
   detenerCamara();
   limpiarGIF();
+
+  flash.classList.remove('activo');
 
   fase = 'menu';
   ocupado = false;
