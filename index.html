@@ -129,7 +129,7 @@ button, .botonDescarga {
 
 .oculto { display: none !important; }
 
-#menu, #qrVista, #gifVista {
+#menu, #qrVista {
   width: 100%;
   max-width: 370px;
   margin: auto;
@@ -145,20 +145,20 @@ button, .botonDescarga {
   margin: 13px auto;
 }
 
-#qrVista, #gifVista {
+#qrVista {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
 }
 
-#qrVista h2, #gifVista h2 {
+#qrVista h2 {
   margin: 0;
   color: #ff61ce;
   font-size: 22px;
 }
 
-#qrVista p, #gifVista p {
+#qrVista p {
   font-size: 13px;
   line-height: 1.45;
   margin: 0;
@@ -173,7 +173,7 @@ button, .botonDescarga {
   border-radius: 6px;
 }
 
-#qrEstado, #gifEstado {
+#qrEstado {
   color: #8ceaf4;
   font-size: 13px;
 }
@@ -194,38 +194,45 @@ button, .botonDescarga {
   overflow-wrap: anywhere;
 }
 
+#gifVista {
+  width: 100%;
+  max-width: 370px;
+  margin: auto;
+  padding: 12px;
+  border: 2px solid #ff36b9;
+  border-radius: 18px;
+  background: #24102f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+#gifVista h2 {
+  margin: 0;
+  color: #ff61ce;
+  font-size: 20px;
+}
+
+#gifEstado {
+  color: #8ceaf4;
+  font-size: 12px;
+}
+
 #gifImagen {
   display: block;
   max-width: 100%;
-  max-height: 48vh;
+  max-height: 52vh;
   width: auto;
   height: auto;
   object-fit: contain;
   border-radius: 6px;
 }
 
-.botonDescarga {
-  display: inline-block;
-  text-decoration: none;
-  background: #ff36b9;
-  color: #190721;
-}
-
-#gifVista button { width: 100%; }
-
-.nota {
-  color: #d6b5df;
-  font-size: 11px !important;
-}
-
 @media (max-height: 650px) {
-  #menu, #qrVista, #gifVista {
-    padding: 12px;
-    gap: 8px;
-  }
-
+  #menu, #qrVista { padding: 12px; }
   #menu button { margin: 8px auto; }
-  #gifImagen { max-height: 38vh; }
+  #gifImagen { max-height: 42vh; }
 }
 </style>
 </head>
@@ -253,28 +260,21 @@ button, .botonDescarga {
     </div>
   </div>
 
-  <section id="qrVista" class="oculto">
-    <h2>¡Tu foto está lista!</h2>
-    <div id="qrEstado">Preparando QR...</div>
-    <img id="qrImagen" class="oculto" alt="Código QR de la fotografía">
-    <a id="qrEnlace" class="oculto" target="_blank" rel="noopener">
-      Abrir fotografía
-    </a>
-    <p>Escanea el QR para abrir y descargar tu fotografía.</p>
-    <button class="principal" onclick="reiniciar()">SIGUIENTE</button>
-  </section>
-
   <section id="gifVista" class="oculto">
     <h2>¡Tu GIF está listo!</h2>
     <div id="gifEstado">Preparando animación...</div>
     <img id="gifImagen" class="oculto" alt="GIF animado de NaLu's 35">
-    <a id="gifDescarga" class="botonDescarga oculto"
-       download="NaLu35_animado.gif">
-      DESCARGAR GIF
+  </section>
+
+  <section id="qrVista" class="oculto">
+    <h2 id="qrTitulo">¡Tu foto está lista!</h2>
+    <div id="qrEstado">Preparando QR...</div>
+    <img id="qrImagen" class="oculto" alt="Código QR">
+    <a id="qrEnlace" class="oculto" target="_blank" rel="noopener">
+      Abrir archivo
     </a>
-    <p class="nota">
-      Versión de prueba: el GIF se descarga directamente,
-      todavía sin Google Drive.
+    <p id="qrInstruccion">
+      Escanea el QR para abrir y descargar tu fotografía.
     </p>
     <button class="principal" onclick="reiniciar()">SIGUIENTE</button>
   </section>
@@ -284,12 +284,13 @@ button, .botonDescarga {
 </div>
 
 <iframe id="envioFrame" name="envioFrame" style="display:none"
-        title="Guardado de fotografía"></iframe>
+        title="Guardado de archivo"></iframe>
 
 <form id="envioForm" method="POST" target="envioFrame"
       style="display:none">
   <input name="foto" id="campoFoto">
   <input name="token" id="campoToken">
+  <input name="tipo" id="campoTipo">
 </form>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
@@ -325,6 +326,7 @@ let fase = 'menu';
 let sesion = 0;
 let ocupado = false;
 let archivoFinal = null;
+let tipoArchivo = 'jpg';
 let tokenActual = null;
 let guardado = null;
 let temporizadorQR = null;
@@ -347,7 +349,7 @@ function cargarMarco(ruta) {
     const img = new Image();
     img.onload = () => ok(img);
     img.onerror = () => fail(new Error('No se encontró ' + ruta));
-    img.src = ruta + '?v=21';
+    img.src = ruta + '?v=22';
   });
 }
 
@@ -379,9 +381,7 @@ function limpiarGIF() {
   }
 
   document.getElementById('gifImagen').removeAttribute('src');
-  document.getElementById('gifDescarga').removeAttribute('href');
   visible('gifImagen', false);
-  visible('gifDescarga', false);
 }
 
 async function elegir(tipo) {
@@ -394,6 +394,7 @@ async function elegir(tipo) {
   marco = null;
   capturas = [];
   archivoFinal = null;
+  tipoArchivo = tipo === 'gif' ? 'gif' : 'jpg';
   tokenActual = null;
   guardado = null;
   envioRealizado = false;
@@ -607,6 +608,8 @@ async function tomarFotos() {
     fase = 'resultado';
     componer();
     archivoFinal = lienzo.toDataURL('image/jpeg', .82);
+    tipoArchivo = 'jpg';
+
     mensaje.textContent = '¡Así quedó tu fotografía!';
     iniciarGuardado();
 
@@ -678,11 +681,7 @@ async function crearGIF(actual) {
     gifEnProceso = gif;
     const zona = zonas.individual[0];
 
-    /*
-      Seis fotografías originales.
-      Un segundo por fotografía.
-      Tres vueltas de la misma secuencia.
-    */
+    // 6 fotos, 1 segundo por foto, 3 vueltas.
     for (let vuelta = 0; vuelta < 3; vuelta++) {
       for (let i = 0; i < 6; i++) {
         if (actual !== sesion) return;
@@ -739,23 +738,45 @@ async function crearGIF(actual) {
     if (actual !== sesion) return;
 
     gifURL = URL.createObjectURL(blob);
-
-    const img = document.getElementById('gifImagen');
-    const descarga = document.getElementById('gifDescarga');
-
-    img.src = gifURL;
-    descarga.href = gifURL;
-
+    document.getElementById('gifImagen').src = gifURL;
     visible('gifImagen', true);
-    visible('gifDescarga', true);
 
-    estado.textContent = '¡Listo! Tu GIF tiene 3 vueltas animadas.';
-    fase = 'gif-listo';
+    estado.textContent = '¡Tu GIF está listo!';
+    fase = 'resultado-gif';
+
+    // Convertimos el GIF a base64 para enviarlo
+    // al mismo Apps Script que guarda las fotos.
+    archivoFinal = await blobADataURL(blob);
+
+    if (actual !== sesion) return;
+
+    tipoArchivo = 'gif';
+    iniciarGuardado();
+
+    // Muestra el GIF 5 segundos antes del QR.
+    temporizadorQR = setTimeout(() => {
+      if (
+        actual === sesion &&
+        fase === 'resultado-gif'
+      ) {
+        pasarAQR();
+      }
+    }, 5000);
 
   } finally {
     gifEnProceso = null;
     if (workerURL) URL.revokeObjectURL(workerURL);
   }
+}
+
+function blobADataURL(blob) {
+  return new Promise((resolver, rechazar) => {
+    const lector = new FileReader();
+    lector.onload = () => resolver(lector.result);
+    lector.onerror = () =>
+      rechazar(new Error('No se pudo preparar el GIF.'));
+    lector.readAsDataURL(blob);
+  });
 }
 
 function generarToken() {
@@ -778,6 +799,7 @@ function iniciarGuardado() {
   document.getElementById('campoFoto').value =
     archivoFinal.split(',')[1];
   document.getElementById('campoToken').value = tokenActual;
+  document.getElementById('campoTipo').value = tipoArchivo;
 
   document.getElementById('envioForm').submit();
   consultarGuardado();
@@ -842,8 +864,21 @@ function pasarAQR() {
   if (!archivoFinal) return;
   clearTimeout(temporizadorQR);
   fase = 'qr';
+
   visible('escenario', false);
+  visible('gifVista', false);
   visible('qrVista', true);
+
+  document.getElementById('qrTitulo').textContent =
+    tipoArchivo === 'gif'
+      ? '¡Tu GIF está listo!'
+      : '¡Tu foto está lista!';
+
+  document.getElementById('qrInstruccion').textContent =
+    tipoArchivo === 'gif'
+      ? 'Escanea el QR para abrir y descargar tu GIF animado.'
+      : 'Escanea el QR para abrir y descargar tu fotografía.';
+
   mensaje.textContent = '';
   actualizarQR();
 }
@@ -857,7 +892,10 @@ function actualizarQR() {
   visible('qrEnlace', false);
 
   if (guardado && guardado.ok && guardado.url) {
-    estado.textContent = '¡Fotografía guardada! Escanea tu QR.';
+    estado.textContent =
+      tipoArchivo === 'gif'
+        ? '¡GIF guardado! Escanea tu QR.'
+        : '¡Fotografía guardada! Escanea tu QR.';
 
     img.src =
       'https://api.qrserver.com/v1/create-qr-code/' +
@@ -866,12 +904,15 @@ function actualizarQR() {
 
     visible('qrImagen', true);
     link.href = guardado.url;
-    link.textContent = 'Abrir fotografía en Drive';
+    link.textContent =
+      tipoArchivo === 'gif'
+        ? 'Abrir GIF en Drive'
+        : 'Abrir fotografía en Drive';
     visible('qrEnlace', true);
 
   } else if (guardado && !guardado.ok) {
     estado.textContent =
-      'No se pudo confirmar la fotografía: ' + guardado.mensaje;
+      'No se pudo confirmar el archivo: ' + guardado.mensaje;
   } else {
     estado.textContent = 'Preparando tu código QR...';
   }
@@ -888,6 +929,7 @@ function reiniciar() {
   marco = null;
   capturas = [];
   archivoFinal = null;
+  tipoArchivo = 'jpg';
   tokenActual = null;
   guardado = null;
   envioRealizado = false;
