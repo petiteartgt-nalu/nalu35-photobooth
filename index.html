@@ -12,90 +12,406 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Modak&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;background:#100719;color:white;font-family:Righteous,cursive;text-align:center}
-.app{height:100vh;height:100dvh;max-width:560px;margin:auto;padding:8px 12px;display:flex;flex-direction:column;align-items:center;overflow:hidden}
-h1{margin:3px 0 1px;color:#ff38be;font-size:26px;text-shadow:0 0 13px #ff0099}
-.sub{margin:0 0 8px;font-family:Modak,cursive;font-size:22px;letter-spacing:2px;color:#79eaf5;text-shadow:0 0 8px #00c8e8}
-#escenario{position:relative;flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
-#lienzo{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:5px}
-#superposicion{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-#tomar{pointer-events:auto;background:#ff36b9;color:#190721;box-shadow:0 0 15px #ff35bd,0 0 32px #ff35bd;border:2px solid white;font-size:20px;padding:17px 25px}
-#cuenta{font-size:clamp(72px,18vw,110px);color:white;text-shadow:0 0 12px #ff00c8,0 0 30px #ff00c8;max-width:100%;padding:0 8px}
-#cuenta.pose{font-size:clamp(24px,6vw,43px)}
-#mensaje{min-height:18px;margin:7px 0;color:#89f1f7;font-size:12px}
-button{font-family:Righteous,cursive;background:#38174b;color:white;border:1px solid #ff4bc9;border-radius:30px;padding:11px 18px;font-size:14px;cursor:pointer}
-.principal{background:#ff36b9;color:#190721}
-.oculto{display:none!important}
-#menu,#qrVista{width:100%;max-width:370px;margin:auto;padding:20px;border:2px solid #ff36b9;border-radius:18px;background:#24102f}
-#menu button{display:block;width:100%;margin:13px auto}
-#qrVista{display:flex;flex-direction:column;align-items:center;gap:12px}
-#qrVista h2{margin:0;color:#ff61ce;font-size:22px}
-#qrVista p{font-size:13px;line-height:1.45;margin:0}
-#qrImagen{display:block;width:min(65vw,230px);height:auto;background:white;padding:8px;border-radius:6px}
-#qrEstado{color:#8ceaf4;font-size:13px}
-#video{position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none}
-#gifVista{width:100%;max-width:370px;margin:auto;padding:12px;border:2px solid #ff36b9;border-radius:18px;background:#24102f;display:flex;flex-direction:column;align-items:center;gap:8px}
-#gifVista h2{margin:0;color:#ff61ce;font-size:20px}
-#gifEstado{color:#8ceaf4;font-size:12px}
-#gifImagen{display:block;max-width:100%;max-height:52vh;width:auto;height:auto;object-fit:contain;border-radius:6px}
-#flash{position:fixed;inset:0;z-index:9999;background:white;opacity:0;pointer-events:none;transition:opacity 130ms ease-out}
-#flash.activo{opacity:1;transition:none}
+
+html,body{
+margin:0;
+width:100%;
+height:100%;
+background:#100719;
+color:white;
+font-family:Righteous,cursive;
+text-align:center;
+}
+
+.app{
+height:100vh;
+height:100dvh;
+max-width:560px;
+margin:auto;
+padding:8px 10px;
+display:flex;
+flex-direction:column;
+align-items:center;
+overflow:hidden;
+}
+
+/* LOGO SOLO EN EL MENÚ */
+#logoInicio{
+display:block;
+width:min(54vw,210px);
+max-height:30dvh;
+height:auto;
+object-fit:contain;
+margin:0 auto 10px;
+filter:drop-shadow(0 0 9px #ff36b966);
+}
+
+#menu{
+width:100%;
+max-width:370px;
+margin:auto;
+padding:20px;
+border:2px solid #ff36b9;
+border-radius:18px;
+background:#24102f;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+gap:3px;
+max-height:100%;
+overflow:auto;
+}
+
+#menu h2{
+font-size:19px;
+margin:4px 0 8px;
+}
+
+#menu button{
+display:block;
+width:100%;
+margin:10px auto;
+flex-shrink:0;
+}
+
+/* CÁMARA Y MARCO VERTICAL */
+#escenario{
+position:relative;
+flex:1;
+min-height:0;
+width:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+overflow:hidden;
+}
+
+#lienzo{
+display:block;
+max-width:100%;
+max-height:100%;
+width:auto;
+height:auto;
+object-fit:contain;
+border-radius:5px;
+aspect-ratio:auto;
+}
+
+#superposicion{
+position:absolute;
+inset:0;
+z-index:2;
+display:flex;
+align-items:center;
+justify-content:center;
+pointer-events:none;
+}
+
+#tomar{
+pointer-events:auto;
+background:#ff36b9;
+color:#190721;
+box-shadow:0 0 15px #ff35bd,0 0 32px #ff35bd;
+border:2px solid white;
+font-size:20px;
+padding:17px 25px;
+}
+
+#cuenta{
+font-size:clamp(72px,18vw,110px);
+color:white;
+text-shadow:0 0 12px #ff00c8,0 0 30px #ff00c8;
+max-width:100%;
+padding:0 8px;
+}
+
+#cuenta.pose{
+font-size:clamp(24px,6vw,43px);
+}
+
+#mensaje{
+min-height:18px;
+margin:7px 0;
+color:#89f1f7;
+font-size:12px;
+}
+
+button{
+font-family:Righteous,cursive;
+background:#38174b;
+color:white;
+border:1px solid #ff4bc9;
+border-radius:30px;
+padding:11px 18px;
+font-size:14px;
+cursor:pointer;
+}
+
+.principal{
+background:#ff36b9;
+color:#190721;
+}
+
+.oculto{
+display:none!important;
+}
+
+/* PANTALLA QR */
+#qrVista{
+width:100%;
+max-width:370px;
+margin:auto;
+padding:20px;
+border:2px solid #ff36b9;
+border-radius:18px;
+background:#24102f;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:12px;
+}
+
+#qrVista h2{
+margin:0;
+color:#ff61ce;
+font-size:22px;
+}
+
+#qrVista p{
+font-size:13px;
+line-height:1.45;
+margin:0;
+}
+
+#qrImagen{
+display:block;
+width:min(65vw,230px);
+height:auto;
+background:white;
+padding:8px;
+border-radius:6px;
+}
+
+#qrEstado{
+color:#8ceaf4;
+font-size:13px;
+}
+
+/* GIF */
+#gifVista{
+width:100%;
+max-width:370px;
+margin:auto;
+padding:12px;
+border:2px solid #ff36b9;
+border-radius:18px;
+background:#24102f;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:8px;
+}
+
+#gifVista h2{
+margin:0;
+color:#ff61ce;
+font-size:20px;
+}
+
+#gifEstado{
+color:#8ceaf4;
+font-size:12px;
+}
+
+#gifImagen{
+display:block;
+max-width:100%;
+max-height:52vh;
+width:auto;
+height:auto;
+object-fit:contain;
+border-radius:6px;
+}
+
+#video{
+position:fixed;
+left:-9999px;
+top:0;
+width:1px;
+height:1px;
+opacity:0;
+pointer-events:none;
+}
+
+#flash{
+position:fixed;
+inset:0;
+z-index:9999;
+background:white;
+opacity:0;
+pointer-events:none;
+transition:opacity 130ms ease-out;
+}
+
+#flash.activo{
+opacity:1;
+transition:none;
+}
+
 @media(max-height:650px){
-#menu,#qrVista{padding:12px}
-#menu button{margin:8px auto}
-#gifImagen{max-height:42vh}
+#logoInicio{
+width:min(39vw,135px);
+max-height:22dvh;
+}
+#menu,#qrVista{
+padding:12px;
+}
+#menu button{
+margin:7px auto;
+}
+#gifImagen{
+max-height:42vh;
+}
 }
 </style>
 </head>
+
 <body>
+
 <div class="app">
-<h1>NaLu's 35</h1>
-<p class="sub">18.12.2026</p>
+
 <section id="menu">
+
+<img
+id="logoInicio"
+src="./logo-nalu35.png?v=28"
+alt="NaLu's 35"
+>
+
 <h2>Elige tu fotografía</h2>
-<button onclick="elegir('individual')">1 FOTOGRAFÍA</button>
-<button onclick="elegir('cuatro')">4 FOTOGRAFÍAS</button>
-<button class="principal" onclick="elegir('gif')">GIF ANIMADO</button>
+
+<button onclick="elegir('individual')">
+1 FOTOGRAFÍA
+</button>
+
+<button onclick="elegir('cuatro')">
+4 FOTOGRAFÍAS
+</button>
+
+<button class="principal" onclick="elegir('gif')">
+GIF ANIMADO
+</button>
+
 </section>
+
 <div id="escenario" class="oculto">
 <canvas id="lienzo"></canvas>
+
 <div id="superposicion">
-<button id="tomar" class="principal oculto" onclick="tomarFotos()">TOMAR FOTO</button>
+
+<button
+id="tomar"
+class="principal oculto"
+onclick="tomarFotos()">
+TOMAR FOTO
+</button>
+
 <div id="cuenta"></div>
+
 </div>
 </div>
+
 <section id="gifVista" class="oculto">
+
 <h2>¡Tu GIF está listo!</h2>
-<div id="gifEstado">Preparando animación...</div>
-<img id="gifImagen" class="oculto" alt="GIF animado">
-</section>
-<section id="qrVista" class="oculto">
-<h2 id="qrTitulo">¡Tu foto está lista!</h2>
-<div id="qrEstado">Preparando QR...</div>
-<img id="qrImagen" class="oculto" alt="Código QR">
-<p id="qrInstruccion">Escanea el QR para abrir y descargar tu fotografía.</p>
-<button class="principal" onclick="reiniciar()">SIGUIENTE</button>
-</section>
-<p id="mensaje"></p>
-<video id="video" autoplay muted playsinline></video>
+
+<div id="gifEstado">
+Preparando animación...
 </div>
+
+<img
+id="gifImagen"
+class="oculto"
+alt="GIF animado"
+>
+
+</section>
+
+<section id="qrVista" class="oculto">
+
+<h2 id="qrTitulo">
+¡Tu foto está lista!
+</h2>
+
+<div id="qrEstado">
+Preparando QR...
+</div>
+
+<img
+id="qrImagen"
+class="oculto"
+alt="Código QR"
+>
+
+<p id="qrInstruccion">
+Escanea el QR para abrir y descargar tu fotografía.
+</p>
+
+<button class="principal" onclick="reiniciar()">
+SIGUIENTE
+</button>
+
+</section>
+
+<p id="mensaje"></p>
+
+<video
+id="video"
+autoplay
+muted
+playsinline>
+</video>
+
+</div>
+
 <div id="flash" aria-hidden="true"></div>
-<iframe id="envioFrame" name="envioFrame" style="display:none" title="Envío de fotografía"></iframe>
-<form id="envioForm" method="POST" target="envioFrame" style="display:none">
+
+<iframe
+id="envioFrame"
+name="envioFrame"
+style="display:none"
+title="Envío de fotografía">
+</iframe>
+
+<form
+id="envioForm"
+method="POST"
+target="envioFrame"
+style="display:none">
+
 <input name="action" id="campoAction">
 <input name="foto" id="campoFoto">
 <input name="token" id="campoToken">
 <input name="tipo" id="campoTipo">
 <input name="part" id="campoPart">
 <input name="total" id="campoTotal">
+
 </form>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+
 <script>
-const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbyYM2_azshTL_-Y4Ad3QPzl33j-Mpy7lX_AfWSnv8OH0sN_9CkIse1ARFfgTFL9o_aJ7Q/exec';
-const GIF_WORKER_URL='https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js';
+
+const APPS_SCRIPT_URL=
+'https://script.google.com/macros/s/AKfycbyYM2_azshTL_-Y4Ad3QPzl33j-Mpy7lX_AfWSnv8OH0sN_9CkIse1ARFfgTFL9o_aJ7Q/exec';
+
+const GIF_WORKER_URL=
+'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js';
 
 const video=document.getElementById('video');
 const lienzo=document.getElementById('lienzo');
@@ -105,7 +421,9 @@ const cuenta=document.getElementById('cuenta');
 const flash=document.getElementById('flash');
 
 const zonas={
-individual:[[.085,.18,.83,.64]],
+individual:[
+[.085,.18,.83,.64]
+],
 cuatro:[
 [.080,.166,.390,.305],
 [.530,.166,.390,.305],
@@ -131,7 +449,8 @@ let gifURL=null;
 let gifEnProceso=null;
 
 function visible(id,si){
-document.getElementById(id).classList.toggle('oculto',!si);
+document.getElementById(id)
+.classList.toggle('oculto',!si);
 }
 
 function esperar(ms){
@@ -150,8 +469,10 @@ function cargarMarco(ruta){
 return new Promise((ok,fail)=>{
 const img=new Image();
 img.onload=()=>ok(img);
-img.onerror=()=>fail(new Error('No se encontró '+ruta));
-img.src=ruta+'?v=26';
+img.onerror=()=>fail(
+new Error('No se encontró '+ruta)
+);
+img.src=ruta+'?v=28';
 });
 }
 
@@ -166,23 +487,35 @@ video.srcObject=null;
 
 function limpiarGIF(){
 if(gifEnProceso){
-try{gifEnProceso.abort()}catch(e){}
+try{
+gifEnProceso.abort();
+}catch(e){}
 gifEnProceso=null;
 }
+
 if(gifURL){
 URL.revokeObjectURL(gifURL);
 gifURL=null;
 }
-document.getElementById('gifImagen').removeAttribute('src');
+
+document.getElementById('gifImagen')
+.removeAttribute('src');
+
 visible('gifImagen',false);
 }
 
+/* SELECCIÓN DE MODALIDAD */
+
 async function elegir(tipo){
+
 const actual=++sesion;
+
 clearTimeout(temporizadorQR);
 detenerCamara();
 limpiarGIF();
+
 flash.classList.remove('activo');
+
 modo=tipo;
 marco=null;
 capturas=[];
@@ -193,33 +526,37 @@ guardado=null;
 envioRealizado=false;
 ocupado=false;
 fase='cargando';
+
 cuenta.textContent='';
+
 visible('menu',false);
 visible('qrVista',false);
 visible('gifVista',false);
 visible('escenario',true);
 visible('tomar',false);
+
 mensaje.textContent='Preparando cámara...';
 
 try{
+
 const nuevoMarco=await cargarMarco(
-tipo==='cuatro'?'marco-cuatro.png':
-tipo==='gif'?'marco-gif.png':
-'marco-individual.png'
+tipo==='cuatro'
+?'marco-cuatro.png'
+:tipo==='gif'
+?'marco-gif.png'
+:'marco-individual.png'
 );
+
 if(actual!==sesion)return;
+
 marco=nuevoMarco;
 
-if(tipo==='cuatro'){
-const z=zonas.cuatro[0];
-lienzo.width=Math.round(marco.naturalWidth*z[2]);
-lienzo.height=Math.round(marco.naturalHeight*z[3]);
-}else{
+/* CONSERVAMOS EL FORMATO ORIGINAL DEL MARCO */
 lienzo.width=marco.naturalWidth;
 lienzo.height=marco.naturalHeight;
-}
 
-const stream=await navigator.mediaDevices.getUserMedia({
+const stream=
+await navigator.mediaDevices.getUserMedia({
 audio:false,
 video:{
 facingMode:'user',
@@ -232,36 +569,62 @@ if(actual!==sesion){
 stream.getTracks().forEach(t=>t.stop());
 return;
 }
+
 camara=stream;
 video.srcObject=stream;
+
 await video.play();
+
 if(actual!==sesion)return;
+
 fase='camara';
+
 visible('tomar',true);
+
 mensaje.textContent=
-tipo==='gif'?'¡Prepárate para 6 poses diferentes!':
-tipo==='individual'?'¡Ubícate dentro del marco!':
-'¡Ubícate dentro del encuadre!';
+tipo==='gif'
+?'¡Prepárate para 6 poses diferentes!'
+:tipo==='individual'
+?'¡Ubícate dentro del marco!'
+:'¡Ubícate dentro del encuadre!';
+
 }catch(err){
-mensaje.textContent='No se pudo iniciar la cámara: '+err.message;
+mensaje.textContent=
+'No se pudo iniciar la cámara: '+err.message;
 console.error(err);
 }
+
 }
 
+/* AJUSTE DE FOTO A CADA VENTANA */
+
 function dibujarFotoEn(c,foto,x,y,w,h){
+
 const iw=foto.videoWidth||foto.width;
 const ih=foto.videoHeight||foto.height;
+
 if(!iw||!ih)return;
+
 const escala=Math.max(w/iw,h/ih);
 const sw=w/escala;
 const sh=h/escala;
 const sx=(iw-sw)/2;
 const sy=(ih-sh)/2;
+
 c.save();
+
 c.translate(x+w,y);
 c.scale(-1,1);
-c.filter='sepia(25%) contrast(108%) saturate(85%)';
-c.drawImage(foto,sx,sy,sw,sh,0,0,w,h);
+
+c.filter=
+'sepia(25%) contrast(108%) saturate(85%)';
+
+c.drawImage(
+foto,
+sx,sy,sw,sh,
+0,0,w,h
+);
+
 c.restore();
 }
 
@@ -270,7 +633,9 @@ dibujarFotoEn(ctx,foto,x,y,w,h);
 }
 
 function dibujarZona(foto,z){
+
 const[x,y,w,h]=z;
+
 dibujarFoto(
 foto,
 x*lienzo.width,
@@ -278,158 +643,299 @@ y*lienzo.height,
 w*lienzo.width,
 h*lienzo.height
 );
+
 }
+
+/* VISTA PREVIA COMPLETA */
 
 function dibujarCamara(){
-if(!lienzo.width)return;
-ctx.clearRect(0,0,lienzo.width,lienzo.height);
-ctx.fillStyle='#100719';
-ctx.fillRect(0,0,lienzo.width,lienzo.height);
 
-if(modo==='cuatro'){
+if(!lienzo.width)return;
+
+ctx.clearRect(
+0,0,lienzo.width,lienzo.height
+);
+
+ctx.fillStyle='#100719';
+
+ctx.fillRect(
+0,0,lienzo.width,lienzo.height
+);
+
 if(video.readyState>=2){
-dibujarFoto(video,0,0,lienzo.width,lienzo.height);
+
+const ventanas=
+modo==='cuatro'
+?zonas.cuatro
+:zonas.individual;
+
+ventanas.forEach(z=>{
+dibujarZona(video,z);
+});
+
 }
-}else{
-if(video.readyState>=2){
-dibujarZona(video,zonas.individual[0]);
-}
+
 if(marco){
-ctx.drawImage(marco,0,0,lienzo.width,lienzo.height);
+ctx.drawImage(
+marco,
+0,0,
+lienzo.width,
+lienzo.height
+);
 }
-}
+
 }
 
 function animar(){
-if(fase==='camara')dibujarCamara();
-requestAnimationFrame(animar);
+if(fase==='camara'){
+dibujarCamara();
 }
 requestAnimationFrame(animar);
+}
+
+requestAnimationFrame(animar);
+
+/* CUENTA REGRESIVA */
 
 async function contar(actual,cambio){
+
 cuenta.classList.add('pose');
-cuenta.textContent=cambio?'¡CAMBIA DE POSE!':'¡PREPÁRATE!';
+
+cuenta.textContent=
+cambio
+?'¡CAMBIA DE POSE!'
+:'¡PREPÁRATE!';
+
 await esperar(1000);
+
 if(actual!==sesion)return false;
+
 cuenta.classList.remove('pose');
+
 const inicio=modo==='gif'?2:3;
 
 for(let n=inicio;n>=1;n--){
+
 if(actual!==sesion)return false;
+
 cuenta.textContent=n;
+
 await esperar(1000);
+
 }
+
 if(actual!==sesion)return false;
+
 cuenta.textContent='';
+
 return true;
 }
 
+/* CAPTURA */
+
 function capturar(){
+
 if(!video.videoWidth||!video.videoHeight){
-throw new Error('La cámara todavía no está lista.');
+throw new Error(
+'La cámara todavía no está lista.'
+);
 }
+
 const copia=document.createElement('canvas');
+
 copia.width=video.videoWidth;
 copia.height=video.videoHeight;
+
 copia.getContext('2d').drawImage(
-video,0,0,copia.width,copia.height
+video,
+0,0,
+copia.width,
+copia.height
 );
+
 return copia;
 }
 
 function componer(){
+
 lienzo.width=marco.naturalWidth;
 lienzo.height=marco.naturalHeight;
+
 ctx.fillStyle='#100719';
-ctx.fillRect(0,0,lienzo.width,lienzo.height);
+
+ctx.fillRect(
+0,0,
+lienzo.width,
+lienzo.height
+);
+
 zonas[modo].forEach((z,i)=>{
-if(capturas[i])dibujarZona(capturas[i],z);
-});
-ctx.drawImage(marco,0,0,lienzo.width,lienzo.height);
+if(capturas[i]){
+dibujarZona(capturas[i],z);
 }
+});
+
+ctx.drawImage(
+marco,
+0,0,
+lienzo.width,
+lienzo.height
+);
+
+}
+
+/* FOTOGRAFÍAS Y GIF */
 
 async function tomarFotos(){
+
 if(ocupado||fase!=='camara')return;
+
 ocupado=true;
 visible('tomar',false);
+
 const actual=sesion;
-const total=modo==='gif'?6:modo==='individual'?1:4;
+
+const total=
+modo==='gif'?6:
+modo==='individual'?1:4;
 
 try{
+
 for(let i=0;i<total;i++){
+
 if(actual!==sesion)return;
-mensaje.textContent='Fotografía '+(i+1)+' de '+total;
+
+mensaje.textContent=
+'Fotografía '+(i+1)+' de '+total;
+
 const ok=await contar(actual,i>0);
+
 if(!ok)return;
+
 capturas.push(capturar());
+
 await mostrarFlash(actual);
+
 if(actual!==sesion)return;
 }
+
 detenerCamara();
 
 if(modo==='gif'){
+
 fase='generando-gif';
+
 visible('escenario',false);
 visible('gifVista',true);
+
 mensaje.textContent='';
+
 await crearGIF(actual);
 return;
 }
 
 fase='resultado';
+
 componer();
-archivoFinal=lienzo.toDataURL('image/jpeg',.82);
+
+archivoFinal=
+lienzo.toDataURL('image/jpeg',.82);
+
 tipoArchivo='jpg';
-mensaje.textContent='¡Así quedó tu fotografía!';
+
+mensaje.textContent=
+'¡Así quedó tu fotografía!';
+
 iniciarGuardado(actual);
 
 temporizadorQR=setTimeout(()=>{
-if(actual===sesion&&fase==='resultado')pasarAQR();
+
+if(actual===sesion&&fase==='resultado'){
+pasarAQR();
+}
+
 },5000);
 
 }catch(err){
+
 console.error(err);
+
 if(actual===sesion){
+
 mensaje.textContent=err.message;
+
 if(modo==='gif'){
-document.getElementById('gifEstado').textContent=
+
+document.getElementById('gifEstado')
+.textContent=
 'No se pudo crear el GIF: '+err.message;
+
 visible('gifVista',true);
+
 }else{
+
 visible('tomar',true);
+
 }
+
 }
+
 }finally{
 ocupado=false;
 }
+
 }
 
+/* GENERADOR DE GIF */
+
 async function obtenerWorkerGIF(){
+
 const r=await fetch(GIF_WORKER_URL);
+
 if(!r.ok){
-throw new Error('No se pudo cargar el generador de GIF.');
-}
-return URL.createObjectURL(
-new Blob([await r.text()],{type:'text/javascript'})
+throw new Error(
+'No se pudo cargar el generador de GIF.'
 );
+}
+
+return URL.createObjectURL(
+new Blob(
+[await r.text()],
+{type:'text/javascript'}
+)
+);
+
 }
 
 async function crearGIF(actual){
-const estado=document.getElementById('gifEstado');
-estado.textContent='Preparando tus 6 fotografías...';
+
+const estado=
+document.getElementById('gifEstado');
+
+estado.textContent=
+'Preparando tus 6 fotografías...';
+
 if(typeof GIF==='undefined'){
-throw new Error('No se cargó la biblioteca de animaciones.');
+throw new Error(
+'No se cargó la biblioteca de animaciones.'
+);
 }
+
 let workerURL=null;
 
 try{
+
 workerURL=await obtenerWorkerGIF();
+
 if(actual!==sesion)return;
 
 const ancho=480;
+
 const alto=Math.round(
-ancho*marco.naturalHeight/marco.naturalWidth
+ancho*marco.naturalHeight/
+marco.naturalWidth
 );
+
 const gif=new GIF({
 workers:2,
 quality:12,
@@ -439,125 +945,237 @@ repeat:0,
 workerScript:workerURL,
 background:'#100719'
 });
+
 gifEnProceso=gif;
+
 const z=zonas.individual[0];
 
 for(let vuelta=0;vuelta<3;vuelta++){
+
 for(let i=0;i<6;i++){
+
 if(actual!==sesion)return;
-const cuadro=document.createElement('canvas');
+
+const cuadro=
+document.createElement('canvas');
+
 cuadro.width=ancho;
 cuadro.height=alto;
+
 const c=cuadro.getContext('2d');
+
 c.fillStyle='#100719';
-c.fillRect(0,0,ancho,alto);
+
+c.fillRect(
+0,0,
+ancho,alto
+);
+
 dibujarFotoEn(
-c,capturas[i],
+c,
+capturas[i],
 z[0]*ancho,
 z[1]*alto,
 z[2]*ancho,
 z[3]*alto
 );
-c.drawImage(marco,0,0,ancho,alto);
-gif.addFrame(cuadro,{copy:true,delay:1000});
+
+c.drawImage(
+marco,
+0,0,
+ancho,alto
+);
+
+gif.addFrame(
+cuadro,
+{copy:true,delay:1000}
+);
+
 estado.textContent=
 'Preparando vuelta '+(vuelta+1)+
 ' de 3, foto '+(i+1)+' de 6...';
-}
+
 }
 
-const blob=await new Promise((resolve,reject)=>{
-gif.on('progress',p=>{
-if(actual===sesion){
-estado.textContent=
-'Creando GIF... '+Math.round(p*100)+'%';
 }
+
+const blob=await new Promise(
+(resolve,reject)=>{
+
+gif.on('progress',p=>{
+
+if(actual===sesion){
+
+estado.textContent=
+'Creando GIF... '+
+Math.round(p*100)+'%';
+
+}
+
 });
+
 gif.on('finished',resolve);
+
 gif.on('abort',()=>reject(
 new Error('Generación cancelada.')
 ));
-try{gif.render()}catch(e){reject(e)}
-});
+
+try{
+gif.render();
+}catch(e){
+reject(e);
+}
+
+}
+);
 
 if(actual!==sesion)return;
+
 gifURL=URL.createObjectURL(blob);
-document.getElementById('gifImagen').src=gifURL;
+
+document.getElementById('gifImagen')
+.src=gifURL;
+
 visible('gifImagen',true);
+
 estado.textContent='¡Tu GIF está listo!';
+
 fase='resultado-gif';
 
 archivoFinal=await blobADataURL(blob);
+
 if(actual!==sesion)return;
+
 tipoArchivo='gif';
+
 iniciarGuardado(actual);
 
 temporizadorQR=setTimeout(()=>{
-if(actual===sesion&&fase==='resultado-gif'){
+
+if(
+actual===sesion&&
+fase==='resultado-gif'
+){
 pasarAQR();
 }
+
 },5000);
 
 }finally{
+
 gifEnProceso=null;
-if(workerURL)URL.revokeObjectURL(workerURL);
+
+if(workerURL){
+URL.revokeObjectURL(workerURL);
 }
+
+}
+
 }
 
 function blobADataURL(blob){
+
 return new Promise((resolve,reject)=>{
+
 const reader=new FileReader();
+
 reader.onload=()=>resolve(reader.result);
+
 reader.onerror=()=>reject(
 new Error('No se pudo preparar el GIF.')
 );
+
 reader.readAsDataURL(blob);
+
 });
+
 }
+
+/* IDENTIFICADOR */
 
 function generarToken(){
+
 const bytes=new Uint8Array(16);
+
 crypto.getRandomValues(bytes);
+
 return Array.from(
-bytes,b=>b.toString(16).padStart(2,'0')
+bytes,
+b=>b.toString(16).padStart(2,'0')
 ).join('');
+
 }
 
-/* Envío en partes: 120 KB de datos por solicitud */
+/* GUARDADO SEGURO EN PARTES */
+
 const CHUNK_CHARS=160000;
 
-function enviarFormulario(action,token,part,total,tipo,data){
-const form=document.getElementById('envioForm');
+function enviarFormulario(
+action,token,part,total,tipo,data
+){
+
+const form=
+document.getElementById('envioForm');
+
 form.action=APPS_SCRIPT_URL;
-document.getElementById('campoAction').value=action;
-document.getElementById('campoToken').value=token;
-document.getElementById('campoPart').value=
-part===null?'':String(part);
-document.getElementById('campoTotal').value=String(total);
-document.getElementById('campoTipo').value=tipo;
-document.getElementById('campoFoto').value=data||'';
+
+document.getElementById('campoAction')
+.value=action;
+
+document.getElementById('campoToken')
+.value=token;
+
+document.getElementById('campoPart')
+.value=part===null?'':String(part);
+
+document.getElementById('campoTotal')
+.value=String(total);
+
+document.getElementById('campoTipo')
+.value=tipo;
+
+document.getElementById('campoFoto')
+.value=data||'';
+
 form.submit();
-document.getElementById('campoFoto').value='';
+
+document.getElementById('campoFoto')
+.value='';
+
 }
 
 let callbackSerial=0;
 
 function consultarRespuesta(token,part,actual){
+
 return new Promise((resolve,reject)=>{
+
 let intentos=0;
 
 const consultar=()=>{
+
 if(actual!==sesion){
-return reject(new Error('Sesión cancelada'));
-}
-if(++intentos>50){
-return reject(new Error(
-'El servidor tardó demasiado. Comprueba tu conexión.'
-));
+return reject(
+new Error('Sesión cancelada')
+);
 }
 
-const callback='naluCheck_'+(++callbackSerial);
-const script=document.createElement('script');
+if(++intentos>50){
+
+return reject(
+new Error(
+'El servidor tardó demasiado. Comprueba tu conexión.'
+)
+);
+
+}
+
+const callback=
+'naluCheck_'+(++callbackSerial);
+
+const script=
+document.createElement('script');
+
 let terminado=false;
 
 const limpiar=()=>{
@@ -566,24 +1184,39 @@ delete window[callback];
 };
 
 window[callback]=r=>{
+
 if(terminado)return;
+
 terminado=true;
 limpiar();
 
 if(r.pendiente){
+
 setTimeout(consultar,900);
+
 }else if(r.ok){
+
 resolve(r);
+
 }else{
-reject(new Error(r.mensaje||'Error al guardar'));
+
+reject(new Error(
+r.mensaje||'Error al guardar'
+));
+
 }
+
 };
 
 script.onerror=()=>{
+
 if(terminado)return;
+
 terminado=true;
 limpiar();
+
 setTimeout(consultar,1200);
+
 };
 
 script.src=
@@ -594,22 +1227,33 @@ APPS_SCRIPT_URL+
 '&t='+Date.now();
 
 document.head.appendChild(script);
+
 };
 
 setTimeout(consultar,700);
+
 });
+
 }
 
 async function iniciarGuardado(actual){
+
 if(!archivoFinal||envioRealizado)return;
+
 envioRealizado=true;
 
 const token=generarToken();
+
 tokenActual=token;
+
 const base64=archivoFinal.split(',')[1];
-const total=Math.ceil(base64.length/CHUNK_CHARS);
+
+const total=Math.ceil(
+base64.length/CHUNK_CHARS
+);
 
 try{
+
 if(total>80){
 throw new Error(
 'El archivo es demasiado grande para enviarlo.'
@@ -617,6 +1261,7 @@ throw new Error(
 }
 
 for(let i=0;i<total;i++){
+
 if(actual!==sesion)return;
 
 const data=base64.slice(
@@ -625,26 +1270,43 @@ i*CHUNK_CHARS,
 );
 
 mensaje.textContent=
-'Guardando '+(i+1)+' de '+total+' partes...';
+'Guardando '+(i+1)+
+' de '+total+' partes...';
 
 if(fase==='qr'){
-document.getElementById('qrEstado').textContent=
-mensaje.textContent;
+
+document.getElementById('qrEstado')
+.textContent=mensaje.textContent;
+
 }
 
 enviarFormulario(
-'chunk',token,i,total,tipoArchivo,data
+'chunk',
+token,
+i,
+total,
+tipoArchivo,
+data
 );
 
-await consultarRespuesta(token,i,actual);
+await consultarRespuesta(
+token,i,actual
+);
+
 }
 
 if(actual!==sesion)return;
 
-mensaje.textContent='Verificando archivo completo...';
+mensaje.textContent=
+'Verificando archivo completo...';
 
 enviarFormulario(
-'finish',token,null,total,tipoArchivo,''
+'finish',
+token,
+null,
+total,
+tipoArchivo,
+''
 );
 
 const result=await consultarRespuesta(
@@ -656,13 +1318,18 @@ if(actual!==sesion)return;
 guardado=result;
 
 if(fase==='qr'){
+
 actualizarQR();
+
 }else{
+
 mensaje.textContent=
 '¡Archivo guardado correctamente!';
+
 }
 
 }catch(e){
+
 if(actual!==sesion)return;
 
 guardado={
@@ -671,45 +1338,70 @@ mensaje:e.message
 };
 
 if(fase==='qr'){
+
 actualizarQR();
+
 }else{
+
 mensaje.textContent=
 'Error al guardar: '+e.message;
-}
-console.error(e);
-}
+
 }
 
+console.error(e);
+
+}
+
+}
+
+/* PANTALLA QR */
+
 function pasarAQR(){
+
 if(!archivoFinal)return;
+
 clearTimeout(temporizadorQR);
+
 fase='qr';
 
 visible('escenario',false);
 visible('gifVista',false);
 visible('qrVista',true);
 
-document.getElementById('qrTitulo').textContent=
+document.getElementById('qrTitulo')
+.textContent=
 tipoArchivo==='gif'
 ?'¡Tu GIF está listo!'
 :'¡Tu foto está lista!';
 
-document.getElementById('qrInstruccion').textContent=
+document.getElementById('qrInstruccion')
+.textContent=
 tipoArchivo==='gif'
 ?'Escanea el QR para abrir y descargar tu GIF animado.'
 :'Escanea el QR para abrir y descargar tu fotografía.';
 
 mensaje.textContent='';
+
 actualizarQR();
+
 }
 
 function actualizarQR(){
-const estado=document.getElementById('qrEstado');
-const img=document.getElementById('qrImagen');
+
+const estado=
+document.getElementById('qrEstado');
+
+const img=
+document.getElementById('qrImagen');
 
 visible('qrImagen',false);
 
-if(guardado&&guardado.ok&&guardado.url){
+if(
+guardado&&
+guardado.ok&&
+guardado.url
+){
+
 estado.textContent=
 tipoArchivo==='gif'
 ?'¡GIF guardado! Escanea tu QR.'
@@ -722,19 +1414,31 @@ encodeURIComponent(guardado.url);
 visible('qrImagen',true);
 
 }else if(guardado&&!guardado.ok){
+
 estado.textContent=
-'No se pudo guardar: '+guardado.mensaje;
+'No se pudo guardar: '+
+guardado.mensaje;
+
 }else{
+
 estado.textContent=
 'Guardando y verificando el archivo...';
-}
+
 }
 
+}
+
+/* REGRESAR AL MENÚ */
+
 function reiniciar(){
+
 ++sesion;
+
 clearTimeout(temporizadorQR);
+
 detenerCamara();
 limpiarGIF();
+
 flash.classList.remove('activo');
 
 fase='menu';
@@ -746,6 +1450,7 @@ tipoArchivo='jpg';
 tokenActual=null;
 guardado=null;
 envioRealizado=false;
+
 cuenta.textContent='';
 mensaje.textContent='';
 
@@ -754,15 +1459,24 @@ visible('qrVista',false);
 visible('gifVista',false);
 visible('tomar',false);
 visible('menu',true);
+
 }
 
-/* Aplicación instalable */
+/* APLICACIÓN INSTALABLE */
+
 if('serviceWorker' in navigator){
+
 window.addEventListener('load',()=>{
-navigator.serviceWorker.register('./sw.js')
+
+navigator.serviceWorker
+.register('./sw.js')
 .catch(console.error);
+
 });
+
 }
+
 </script>
+
 </body>
 </html>
