@@ -2,474 +2,519 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NaLu's 35 - Photobooth</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NaLu's 35 Photobooth</title>
 
-  <style>
-    * { box-sizing: border-box; }
+<style>
+* { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      background: #100719;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-    }
+body {
+  margin: 0;
+  background: #100719;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
 
-    main {
-      max-width: 520px;
-      margin: auto;
-      padding: 18px 12px 40px;
-    }
+.app {
+  height: 100dvh;
+  max-width: 520px;
+  margin: auto;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
 
-    h1 {
-      color: #ff39c9;
-      font-size: 2.5rem;
-      text-shadow: 0 0 10px #ff00aa, 0 0 25px #ff00aa;
-      margin: 16px 0 6px;
-    }
+h1 {
+  color: #ff38be;
+  font-size: 24px;
+  margin: 5px 0 2px;
+  text-shadow: 0 0 12px #f09;
+}
 
-    p { color: #ddd; }
+.subtitulo {
+  font-size: 11px;
+  color: #76edfa;
+  margin: 0 0 7px;
+}
 
-    .panel {
-      background: #21102e;
-      border: 1px solid #f637b6;
-      border-radius: 18px;
-      padding: 20px 14px;
-      margin-top: 18px;
-    }
+#escenario {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    .opciones {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 20px;
-    }
+#lienzo {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+}
 
-    button {
-      cursor: pointer;
-      border: 2px solid #ff3ac8;
-      border-radius: 14px;
-      padding: 14px 12px;
-      background: #351348;
-      color: white;
-      font-weight: bold;
-      font-size: 16px;
-    }
+#cuenta {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 95px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 20px #ff00c8;
+  pointer-events: none;
+}
 
-    button:active { transform: scale(.98); }
+#mensaje {
+  font-size: 12px;
+  color: #8df1f8;
+  margin: 6px 0;
+  min-height: 16px;
+}
 
-    button:disabled {
-      opacity: .5;
-      cursor: wait;
-    }
+.controles {
+  flex-shrink: 0;
+  width: 100%;
+  padding-bottom: 5px;
+}
 
-    .principal {
-      background: #ff24ad;
-      color: #160719;
-      width: 100%;
-      margin-top: 14px;
-    }
+button {
+  border: 1px solid #ff4bc9;
+  border-radius: 20px;
+  background: #3b174e;
+  color: white;
+  font-weight: bold;
+  padding: 11px 17px;
+  margin: 3px;
+  cursor: pointer;
+}
 
-    .secundario {
-      margin-top: 12px;
-      width: 100%;
-    }
+button:disabled { opacity: .45; }
 
-    .oculto { display: none !important; }
+.principal {
+  background: #ff36b9;
+  color: #16051b;
+}
 
-    .visor {
-      position: relative;
-      width: 100%;
-      max-width: 430px;
-      margin: 16px auto;
-      overflow: hidden;
-      border: 2px solid #ff39c9;
-      border-radius: 12px;
-      background: black;
-    }
+.oculto { display: none !important; }
 
-    video {
-      display: block;
-      width: 100%;
-      aspect-ratio: 9 / 12;
-      object-fit: cover;
-      transform: scaleX(-1);
-      filter: sepia(.25) contrast(1.08) saturate(.85);
-    }
+#menu, #qrVista {
+  width: 100%;
+  max-width: 360px;
+  margin: auto;
+  padding: 20px;
+  border: 2px solid #ff36b9;
+  border-radius: 18px;
+  background: #24102f;
+}
 
-    #contador {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 110px;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 0 20px #ff00b7;
-      pointer-events: none;
-    }
+#menu h2, #qrVista h2 {
+  font-size: 21px;
+}
 
-    #resultado {
-      display: block;
-      width: 100%;
-      max-width: 430px;
-      margin: 15px auto;
-      border-radius: 10px;
-    }
+#menu button {
+  display: block;
+  width: 100%;
+  margin: 12px auto;
+}
 
-    #estado {
-      min-height: 24px;
-      color: #73ecf5;
-    }
+#qrVista {
+  text-align: center;
+}
 
-    .nota {
-      font-size: 13px;
-      color: #bbb;
-    }
-  </style>
+#qrVista p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#qrIcono {
+  font-size: 65px;
+  margin: 20px 0;
+}
+
+#video {
+  display: none;
+}
+</style>
 </head>
 
 <body>
-<main>
+
+<div class="app">
   <h1>NaLu's 35</h1>
-  <p>18.12.2026 · Retro Glam Rock</p>
+  <p class="subtitulo">PHOTOBOOTH · 18.12.2026</p>
 
-  <section id="menu" class="panel">
-    <h2>¿Cómo quieres tus fotos?</h2>
-    <div class="opciones">
-      <button onclick="iniciar('individual')">
-        📸 1 FOTO
+  <section id="menu">
+    <h2>Elige tu fotografía</h2>
+    <button onclick="elegir('individual')">
+      1 FOTOGRAFÍA
+    </button>
+    <button onclick="elegir('cuatro')">
+      4 FOTOGRAFÍAS
+    </button>
+  </section>
+
+  <div id="escenario" class="oculto">
+    <canvas id="lienzo"></canvas>
+    <div id="cuenta"></div>
+  </div>
+
+  <section id="qrVista" class="oculto">
+    <h2>¡Tu fotografía está lista!</h2>
+    <div id="qrIcono">▦</div>
+    <p>
+      Aquí aparecerá el código QR para descargar
+      tu fotografía cuando activemos Google Drive.
+    </p>
+    <button onclick="descargar()" class="principal">
+      Descargar fotografía
+    </button>
+  </section>
+
+  <p id="mensaje"></p>
+
+  <div class="controles">
+    <div id="controlesCamara" class="oculto">
+      <button id="tomar" class="principal"
+              onclick="tomarFotos()">
+        TOMAR FOTO
       </button>
-      <button onclick="iniciar('cuatro')">
-        📸 4 FOTOS
+      <button onclick="reiniciar()">Volver</button>
+    </div>
+
+    <div id="controlesFoto" class="oculto">
+      <button onclick="mostrarQR()" class="principal">
+        Siguiente ›
+      </button>
+      <button onclick="reiniciar()">Repetir</button>
+    </div>
+
+    <div id="controlesQR" class="oculto">
+      <button onclick="reiniciar()" class="principal">
+        Nueva fotografía
       </button>
     </div>
-    <p class="nota">
-      Elige tu formato y prepárate para posar.
-    </p>
-  </section>
+  </div>
 
-  <section id="camara" class="panel oculto">
-    <h2 id="tituloModo">¡Prepárate!</h2>
-
-    <div class="visor">
-      <video id="video" autoplay playsinline muted></video>
-      <div id="contador"></div>
-    </div>
-
-    <p id="estado">Preparando cámara...</p>
-
-    <button id="botonCaptura" class="principal"
-            onclick="tomarFotografias()">
-      TOMAR FOTOS
-    </button>
-
-    <button class="secundario" onclick="volverAlMenu()">
-      CAMBIAR FORMATO
-    </button>
-  </section>
-
-  <section id="final" class="panel oculto">
-    <h2>¡Así quedaron tus fotos!</h2>
-    <img id="resultado" alt="Fotografía con marco NaLu's 35">
-
-    <button class="principal" onclick="descargarFoto()">
-      DESCARGAR FOTO
-    </button>
-
-    <button class="secundario" onclick="volverAlMenu()">
-      SIGUIENTE FOTO
-    </button>
-
-    <p class="nota">
-      Próximamente: guardado automático y código QR.
-    </p>
-  </section>
-</main>
+  <video id="video" autoplay muted playsinline></video>
+</div>
 
 <script>
-  const video = document.getElementById("video");
-  const contador = document.getElementById("contador");
-  const estado = document.getElementById("estado");
-  const botonCaptura = document.getElementById("botonCaptura");
+const video = document.getElementById("video");
+const lienzo = document.getElementById("lienzo");
+const ctx = lienzo.getContext("2d");
+const mensaje = document.getElementById("mensaje");
+const cuenta = document.getElementById("cuenta");
 
-  const ANCHO = 900;
-  const ALTO = 1600;
+let modo = "individual";
+let marco = null;
+let camara = null;
+let capturas = [];
+let fase = "menu";
+let ocupado = false;
+let sesion = 0;
+let archivoFinal = null;
 
-  let modo = "individual";
-  let transmision = null;
-  let trabajando = false;
-  let cancelado = false;
-  let fotoFinal = null;
+// Posiciones relativas a cada marco.
+// Se pueden ajustar si fuera necesario.
+const zonas = {
+  individual: [
+    [.085, .18, .83, .64]
+  ],
+  cuatro: [
+    [.080, .166, .390, .305],
+    [.530, .166, .390, .305],
+    [.080, .515, .390, .305],
+    [.530, .515, .390, .305]
+  ]
+};
 
-  const marcos = {
-    individual: "marco-individual.png",
-    cuatro: "marco-cuatro.png"
-  };
+function visible(id, si) {
+  document.getElementById(id)
+    .classList.toggle("oculto", !si);
+}
 
-  function mostrar(id) {
-    ["menu", "camara", "final"].forEach(nombre => {
-      document.getElementById(nombre).classList.toggle(
-        "oculto", nombre !== id
-      );
-    });
+function controles(nombre) {
+  visible("controlesCamara", nombre === "camara");
+  visible("controlesFoto", nombre === "foto");
+  visible("controlesQR", nombre === "qr");
+}
+
+function cargarMarco(ruta) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(
+      new Error("No se encontró el marco: " + ruta)
+    );
+    img.src = ruta + "?v=5";
+  });
+}
+
+function detenerCamara() {
+  if (camara) {
+    camara.getTracks().forEach(t => t.stop());
+    camara = null;
   }
+  video.srcObject = null;
+}
 
-  async function iniciar(opcion) {
-    if (trabajando) return;
+async function elegir(tipo) {
+  const actual = ++sesion;
 
-    modo = opcion;
-    cancelado = false;
-    fotoFinal = null;
+  modo = tipo;
+  capturas = [];
+  archivoFinal = null;
+  ocupado = false;
+  fase = "cargando";
 
-    document.getElementById("tituloModo").textContent =
-      modo === "individual" ? "Una fotografía" : "Cuatro fotografías";
+  visible("menu", false);
+  visible("escenario", true);
+  visible("qrVista", false);
+  controles("");
+  mensaje.textContent = "Preparando cámara...";
 
-    estado.textContent = "Preparando cámara...";
-    contador.textContent = "";
-    botonCaptura.disabled = false;
-
-    mostrar("camara");
-
-    try {
-      detenerCamara();
-
-      transmision = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-          facingMode: "user",
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }
-      });
-
-      if (cancelado) {
-        detenerCamara();
-        return;
-      }
-
-      video.srcObject = transmision;
-      await video.play();
-
-      estado.textContent = "¡Lista para tomar fotos!";
-    } catch (error) {
-      estado.textContent =
-        "No se pudo abrir la cámara. Revisa los permisos.";
-      console.error(error);
-    }
-  }
-
-  function detenerCamara() {
-    if (transmision) {
-      transmision.getTracks().forEach(pista => pista.stop());
-      transmision = null;
-    }
-    video.srcObject = null;
-  }
-
-  function esperar(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  async function cuentaRegresiva() {
-    for (let numero = 3; numero >= 1; numero--) {
-      if (cancelado) throw new Error("Cancelado");
-
-      contador.textContent = numero;
-      await esperar(1000);
-    }
-
-    if (cancelado) throw new Error("Cancelado");
-
-    contador.textContent = "¡YA!";
-    await esperar(200);
-    contador.textContent = "";
-  }
-
-  function capturar() {
-    if (!video.videoWidth || !video.videoHeight) {
-      throw new Error("La cámara todavía no está lista.");
-    }
-
-    const lienzo = document.createElement("canvas");
-    lienzo.width = 900;
-    lienzo.height = 1200;
-
-    const ctx = lienzo.getContext("2d");
-
-    // Recorta la imagen sin deformar los rostros.
-    const vw = video.videoWidth;
-    const vh = video.videoHeight;
-    const proporcion = lienzo.width / lienzo.height;
-
-    let sx = 0, sy = 0, sw = vw, sh = vh;
-
-    if (vw / vh > proporcion) {
-      sw = vh * proporcion;
-      sx = (vw - sw) / 2;
-    } else {
-      sh = vw / proporcion;
-      sy = (vh - sh) / 2;
-    }
-
-    ctx.save();
-    ctx.translate(lienzo.width, 0);
-    ctx.scale(-1, 1);
-    ctx.filter = "sepia(25%) contrast(108%) saturate(85%)";
-
-    ctx.drawImage(
-      video, sx, sy, sw, sh,
-      0, 0, lienzo.width, lienzo.height
+  try {
+    marco = await cargarMarco(
+      tipo === "individual"
+        ? "marco-individual.png"
+        : "marco-cuatro.png"
     );
 
-    ctx.restore();
-    return lienzo;
-  }
+    if (actual !== sesion) return;
 
-  function cargarImagen(ruta) {
-    return new Promise((resolve, reject) => {
-      const imagen = new Image();
-      imagen.onload = () => resolve(imagen);
-      imagen.onerror = () => reject(
-        new Error("No se pudo cargar " + ruta)
-      );
-      imagen.src = ruta;
+    lienzo.width = marco.naturalWidth;
+    lienzo.height = marco.naturalHeight;
+
+    camara = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: "user",
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }
     });
-  }
 
-  function dibujarRecortada(ctx, imagen, x, y, ancho, alto) {
-    const iw = imagen.width;
-    const ih = imagen.height;
-    const proporcion = ancho / alto;
-
-    let sx = 0, sy = 0, sw = iw, sh = ih;
-
-    if (iw / ih > proporcion) {
-      sw = ih * proporcion;
-      sx = (iw - sw) / 2;
-    } else {
-      sh = iw / proporcion;
-      sy = (ih - sh) / 2;
-    }
-
-    ctx.drawImage(
-      imagen, sx, sy, sw, sh,
-      x, y, ancho, alto
-    );
-  }
-
-  async function crearComposicion(fotos) {
-    const lienzo = document.createElement("canvas");
-    lienzo.width = ANCHO;
-    lienzo.height = ALTO;
-
-    const ctx = lienzo.getContext("2d");
-
-    ctx.fillStyle = "#16091f";
-    ctx.fillRect(0, 0, ANCHO, ALTO);
-
-    if (modo === "individual") {
-      // Zona central del marco individual.
-      dibujarRecortada(
-        ctx, fotos[0],
-        95, 340, 710, 1010
-      );
-    } else {
-      // Cuatro espacios en forma de ventana 2 x 2.
-      const espacios = [
-        [62, 310, 373, 475],
-        [465, 310, 373, 475],
-        [62, 825, 373, 475],
-        [465, 825, 373, 475]
-      ];
-
-      fotos.forEach((foto, indice) => {
-        dibujarRecortada(
-          ctx, foto, ...espacios[indice]
-        );
-      });
-    }
-
-    // El marco se dibuja ENCIMA de las fotografías.
-    const marco = await cargarImagen(marcos[modo]);
-    ctx.drawImage(marco, 0, 0, ANCHO, ALTO);
-
-    return lienzo.toDataURL("image/jpeg", 0.92);
-  }
-
-  async function tomarFotografias() {
-    if (trabajando || !transmision) return;
-
-    trabajando = true;
-    cancelado = false;
-    botonCaptura.disabled = true;
-
-    const fotos = [];
-    const cantidad = modo === "individual" ? 1 : 4;
-
-    try {
-      for (let i = 0; i < cantidad; i++) {
-        estado.textContent =
-          "Fotografía " + (i + 1) + " de " + cantidad;
-
-        await cuentaRegresiva();
-        fotos.push(capturar());
-
-        if (i < cantidad - 1) {
-          estado.textContent = "¡Cambia de pose!";
-          await esperar(700);
-        }
-      }
-
-      estado.textContent = "Preparando tu fotografía...";
-
-      fotoFinal = await crearComposicion(fotos);
-
-      document.getElementById("resultado").src = fotoFinal;
-
+    if (actual !== sesion) {
       detenerCamara();
-      mostrar("final");
-
-    } catch (error) {
-      if (!cancelado) {
-        estado.textContent = "Error: " + error.message;
-        console.error(error);
-      }
-    } finally {
-      contador.textContent = "";
-      botonCaptura.disabled = false;
-      trabajando = false;
+      return;
     }
+
+    video.srcObject = camara;
+    await video.play();
+
+    if (actual !== sesion) return;
+
+    fase = "camara";
+    controles("camara");
+    mensaje.textContent = "¡Ubícate dentro del marco!";
+
+  } catch (error) {
+    mensaje.textContent =
+      "No se pudo iniciar: " + error.message;
+    console.error(error);
+    controles("");
+  }
+}
+
+function dibujarFoto(foto, zona) {
+  if (!foto || !foto.width || !foto.height) return;
+
+  const [px, py, pw, ph] = zona;
+
+  const x = px * lienzo.width;
+  const y = py * lienzo.height;
+  const w = pw * lienzo.width;
+  const h = ph * lienzo.height;
+
+  const iw = foto.width;
+  const ih = foto.height;
+
+  const escala = Math.max(w / iw, h / ih);
+  const sw = w / escala;
+  const sh = h / escala;
+  const sx = (iw - sw) / 2;
+  const sy = (ih - sh) / 2;
+
+  ctx.save();
+
+  // Efecto espejo y filtro vintage.
+  ctx.translate(x + w, y);
+  ctx.scale(-1, 1);
+  ctx.filter = "sepia(25%) contrast(108%) saturate(85%)";
+
+  ctx.drawImage(
+    foto,
+    sx, sy, sw, sh,
+    0, 0, w, h
+  );
+
+  ctx.restore();
+}
+
+function dibujarEscena() {
+  if (!marco || !lienzo.width) return;
+
+  ctx.clearRect(0, 0, lienzo.width, lienzo.height);
+  ctx.fillStyle = "#100719";
+  ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+
+  const espacios = zonas[modo];
+
+  espacios.forEach((zona, i) => {
+    if (capturas[i]) {
+      dibujarFoto(capturas[i], zona);
+    } else if (fase === "camara" &&
+               video.readyState >= 2) {
+      dibujarFoto(video, zona);
+    }
+  });
+
+  // Marco por encima de la cámara y las fotos.
+  ctx.drawImage(
+    marco, 0, 0, lienzo.width, lienzo.height
+  );
+}
+
+function animar() {
+  if (fase === "camara" || fase === "foto") {
+    dibujarEscena();
+  }
+  requestAnimationFrame(animar);
+}
+requestAnimationFrame(animar);
+
+function esperar(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function contar(actual) {
+  for (let n = 3; n >= 1; n--) {
+    if (actual !== sesion) return false;
+    cuenta.textContent = n;
+    await esperar(1000);
   }
 
-  function descargarFoto() {
-    if (!fotoFinal) return;
+  if (actual !== sesion) return false;
 
-    const enlace = document.createElement("a");
-    enlace.href = fotoFinal;
-    enlace.download =
-      "NaLu35_" + modo + "_" + Date.now() + ".jpg";
+  cuenta.textContent = "";
+  return true;
+}
 
-    document.body.appendChild(enlace);
-    enlace.click();
-    enlace.remove();
-  }
+function capturarFotograma() {
+  const copia = document.createElement("canvas");
+  copia.width = video.videoWidth;
+  copia.height = video.videoHeight;
 
-  function volverAlMenu() {
-    // No interrumpir una composición en proceso.
-    if (trabajando) return;
+  copia.getContext("2d").drawImage(
+    video, 0, 0, copia.width, copia.height
+  );
 
-    cancelado = true;
+  return copia;
+}
+
+async function tomarFotos() {
+  if (ocupado || fase !== "camara") return;
+
+  ocupado = true;
+  const actual = sesion;
+  const total = modo === "individual" ? 1 : 4;
+
+  document.getElementById("tomar").disabled = true;
+
+  try {
+    for (let i = 0; i < total; i++) {
+      if (actual !== sesion) return;
+
+      mensaje.textContent =
+        "Fotografía " + (i + 1) + " de " + total;
+
+      const continuar = await contar(actual);
+      if (!continuar) return;
+
+      capturas.push(capturarFotograma());
+
+      if (i < total - 1) {
+        mensaje.textContent = "¡Cambia de pose!";
+        await esperar(650);
+      }
+    }
+
+    if (actual !== sesion) return;
+
+    // Congelamos el resultado en el mismo lienzo.
+    fase = "foto";
+    dibujarEscena();
+
+    archivoFinal = lienzo.toDataURL(
+      "image/jpeg", .92
+    );
+
     detenerCamara();
-    contador.textContent = "";
-    fotoFinal = null;
+    controles("foto");
+    mensaje.textContent = "¡Así quedó tu fotografía!";
 
-    document.getElementById("resultado").removeAttribute("src");
-    mostrar("menu");
+  } catch (error) {
+    mensaje.textContent = error.message;
+    console.error(error);
+  } finally {
+    ocupado = false;
+    document.getElementById("tomar").disabled = false;
   }
+}
+
+function mostrarQR() {
+  if (!archivoFinal) return;
+
+  fase = "qr";
+  visible("escenario", false);
+  visible("qrVista", true);
+  controles("qr");
+  mensaje.textContent =
+    "El QR se activará al conectar Google Drive.";
+}
+
+function descargar() {
+  if (!archivoFinal) return;
+
+  const a = document.createElement("a");
+  a.href = archivoFinal;
+  a.download =
+    "NaLu35_" + modo + "_" + Date.now() + ".jpg";
+
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function reiniciar() {
+  sesion++;
+  fase = "menu";
+  ocupado = false;
+  marco = null;
+  capturas = [];
+  archivoFinal = null;
+
+  detenerCamara();
+
+  cuenta.textContent = "";
+  mensaje.textContent = "";
+
+  visible("escenario", false);
+  visible("qrVista", false);
+  visible("menu", true);
+  controles("");
+}
 </script>
+
 </body>
 </html>
