@@ -9,100 +9,914 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="NaLu 35">
 <title>NaLu's 35</title>
+
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Righteous&family=Modak&display=swap" rel="stylesheet">
+
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;background:#100719;color:white;font-family:Righteous,cursive;text-align:center}
-.app{height:100vh;height:100dvh;max-width:560px;margin:auto;padding:8px 12px;display:flex;flex-direction:column;align-items:center;overflow:hidden}
-#logoInicio{display:block;width:min(54vw,210px);max-height:30dvh;height:auto;object-fit:contain;margin:0 auto 10px;filter:drop-shadow(0 0 9px #ff36b966)}
-#menu{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;max-height:100%;overflow:auto}
+html,body{
+  margin:0;width:100%;height:100%;
+  background:#100719;color:white;
+  font-family:Righteous,cursive;text-align:center
+}
+.app{
+  height:100vh;height:100dvh;
+  max-width:560px;margin:auto;padding:8px 12px;
+  display:flex;flex-direction:column;align-items:center;
+  overflow:hidden
+}
+#logoInicio{
+  display:block;width:min(54vw,210px);
+  max-height:30dvh;height:auto;object-fit:contain;
+  margin:0 auto 10px;
+  filter:drop-shadow(0 0 9px #ff36b966)
+}
+#menu{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:3px;max-height:100%;overflow:auto
+}
 #menu h2{font-size:19px;margin:4px 0 8px}
 #menu button{flex-shrink:0}
-@media(max-height:650px){#logoInicio{width:min(39vw,135px);max-height:22dvh}}
-#escenario{position:relative;flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
-#lienzo{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:5px;aspect-ratio:auto}
-#escenario{overflow:hidden}
-#superposicion{z-index:2}
-#superposicion{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-#tomar{pointer-events:auto;background:#ff36b9;color:#190721;box-shadow:0 0 15px #ff35bd,0 0 32px #ff35bd;border:2px solid white;font-size:20px;padding:17px 25px}
-#cuenta{font-size:clamp(72px,18vw,110px);color:white;text-shadow:0 0 12px #ff00c8,0 0 30px #ff00c8;max-width:100%;padding:0 8px}
+@media(max-height:650px){
+  #logoInicio{width:min(39vw,135px);max-height:22dvh}
+}
+#escenario{
+  position:relative;flex:1;min-height:0;width:100%;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden
+}
+#lienzo{
+  display:block;max-width:100%;max-height:100%;
+  width:auto;height:auto;object-fit:contain;
+  border-radius:5px;aspect-ratio:auto
+}
+#superposicion{
+  z-index:2;position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none
+}
+#tomar{
+  pointer-events:auto;background:#ff36b9;color:#190721;
+  box-shadow:0 0 15px #ff35bd,0 0 32px #ff35bd;
+  border:2px solid white;font-size:20px;
+  padding:17px 25px
+}
+#cuenta{
+  font-size:clamp(72px,18vw,110px);
+  color:white;text-shadow:0 0 12px #ff00c8,0 0 30px #ff00c8;
+  max-width:100%;padding:0 8px
+}
 #cuenta.pose{font-size:clamp(24px,6vw,43px)}
-#mensaje{min-height:18px;margin:7px 0;color:#89f1f7;font-size:12px}
-button{font-family:Righteous,cursive;background:#38174b;color:white;border:1px solid #ff4bc9;border-radius:30px;padding:11px 18px;font-size:14px;cursor:pointer}
-.principal{background:#ff36b9;color:#190721}.oculto{display:none!important}
-#menu,#qrVista{width:100%;max-width:370px;margin:auto;padding:20px;border:2px solid #ff36b9;border-radius:18px;background:#24102f}
+#mensaje{
+  min-height:18px;margin:7px 0;
+  color:#89f1f7;font-size:12px
+}
+button{
+  font-family:Righteous,cursive;
+  background:#38174b;color:white;
+  border:1px solid #ff4bc9;border-radius:30px;
+  padding:11px 18px;font-size:14px;cursor:pointer
+}
+.principal{background:#ff36b9;color:#190721}
+.oculto{display:none!important}
+#menu,#qrVista{
+  width:100%;max-width:370px;margin:auto;padding:20px;
+  border:2px solid #ff36b9;border-radius:18px;
+  background:#24102f
+}
 #menu button{display:block;width:100%;margin:13px auto}
-#qrVista{display:flex;flex-direction:column;align-items:center;gap:12px}
+#qrVista{
+  display:flex;flex-direction:column;
+  align-items:center;gap:12px
+}
 #qrVista h2{margin:0;color:#ff61ce;font-size:22px}
 #qrVista p{font-size:13px;line-height:1.45;margin:0}
-#qrImagen{display:block;width:min(65vw,230px);height:auto;background:white;padding:8px;border-radius:6px}
+#qrImagen{
+  display:block;width:min(65vw,230px);height:auto;
+  background:white;padding:8px;border-radius:6px
+}
 #qrEstado{color:#8ceaf4;font-size:13px}
-#video{position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none}
-#gifVista{width:100%;max-width:370px;margin:auto;padding:12px;border:2px solid #ff36b9;border-radius:18px;background:#24102f;display:flex;flex-direction:column;align-items:center;gap:8px}
+#video{
+  position:fixed;left:-9999px;top:0;
+  width:1px;height:1px;opacity:0;pointer-events:none
+}
+#gifVista{
+  width:100%;max-width:370px;margin:auto;padding:12px;
+  border:2px solid #ff36b9;border-radius:18px;
+  background:#24102f;
+  display:flex;flex-direction:column;
+  align-items:center;gap:8px
+}
 #gifVista h2{margin:0;color:#ff61ce;font-size:20px}
 #gifEstado{color:#8ceaf4;font-size:12px}
-#gifImagen{display:block;max-width:100%;max-height:52vh;width:auto;height:auto;object-fit:contain;border-radius:6px}
-#flash{position:fixed;inset:0;z-index:9999;background:white;opacity:0;pointer-events:none;transition:opacity 130ms ease-out}
+#gifImagen{
+  display:block;max-width:100%;max-height:52vh;
+  width:auto;height:auto;object-fit:contain;border-radius:6px
+}
+#flash{
+  position:fixed;inset:0;z-index:9999;
+  background:white;opacity:0;pointer-events:none;
+  transition:opacity 130ms ease-out
+}
 #flash.activo{opacity:1;transition:none}
-@media(max-height:650px){#menu,#qrVista{padding:12px}#menu button{margin:8px auto}#gifImagen{max-height:42vh}}
+@media(max-height:650px){
+  #menu,#qrVista{padding:12px}
+  #menu button{margin:8px auto}
+  #gifImagen{max-height:42vh}
+}
 </style>
 </head>
+
 <body>
 <div class="app">
-<section id="menu"><img id="logoInicio" src="./logo-nalu35.png?v=33" alt="NaLu’s 35, fiesta retro"><h2>Elige tu fotografía</h2>
-<button onclick="elegir('individual')">1 FOTOGRAFÍA</button>
-<button onclick="elegir('cuatro')">4 FOTOGRAFÍAS</button>
-<button class="principal" onclick="elegir('gif')">GIF ANIMADO</button></section>
-<div id="escenario" class="oculto"><canvas id="lienzo"></canvas><div id="superposicion"><button id="tomar" class="principal oculto" onclick="tomarFotos()">TOMAR FOTO</button><div id="cuenta"></div></div></div>
-<section id="gifVista" class="oculto"><h2>¡Tu GIF está listo!</h2><div id="gifEstado">Preparando animación...</div><img id="gifImagen" class="oculto" alt="GIF animado"></section>
-<section id="qrVista" class="oculto"><h2 id="qrTitulo">¡Tu foto está lista!</h2><div id="qrEstado">Preparando QR...</div><img id="qrImagen" class="oculto" alt="Código QR"><p id="qrInstruccion">Escanea el QR para abrir y descargar tu fotografía.</p><button class="principal" onclick="reiniciar()">SIGUIENTE</button></section>
-<p id="mensaje"></p><video id="video" autoplay muted playsinline></video>
+
+<section id="menu">
+  <img id="logoInicio" src="./logo-nalu35.png?v=34" alt="NaLu’s 35, fiesta retro">
+  <h2>Elige tu fotografía</h2>
+  <button onclick="elegir('individual')">1 FOTOGRAFÍA</button>
+  <button onclick="elegir('cuatro')">4 FOTOGRAFÍAS</button>
+  <button class="principal" onclick="elegir('gif')">GIF ANIMADO</button>
+</section>
+
+<div id="escenario" class="oculto">
+  <canvas id="lienzo"></canvas>
+  <div id="superposicion">
+    <button id="tomar" class="principal oculto" onclick="tomarFotos()">TOMAR FOTO</button>
+    <div id="cuenta"></div>
+  </div>
 </div>
+
+<section id="gifVista" class="oculto">
+  <h2>¡Tu GIF está listo!</h2>
+  <div id="gifEstado">Preparando animación...</div>
+  <img id="gifImagen" class="oculto" alt="GIF animado">
+</section>
+
+<section id="qrVista" class="oculto">
+  <h2 id="qrTitulo">¡Tu foto está lista!</h2>
+  <div id="qrEstado">Preparando QR...</div>
+  <img id="qrImagen" class="oculto" alt="Código QR">
+  <p id="qrInstruccion">Escanea el QR para abrir y descargar tu fotografía.</p>
+  <button class="principal" onclick="reiniciar()">SIGUIENTE</button>
+</section>
+
+<p id="mensaje"></p>
+<video id="video" autoplay muted playsinline></video>
+</div>
+
 <div id="flash" aria-hidden="true"></div>
+
 <iframe id="envioFrame" name="envioFrame" style="display:none" title="Envío de fotografía"></iframe>
+
 <form id="envioForm" method="POST" target="envioFrame" style="display:none">
-<input name="action" id="campoAction"><input name="foto" id="campoFoto"><input name="token" id="campoToken"><input name="tipo" id="campoTipo"><input name="part" id="campoPart"><input name="total" id="campoTotal">
+  <input name="action" id="campoAction">
+  <input name="foto" id="campoFoto">
+  <input name="token" id="campoToken">
+  <input name="tipo" id="campoTipo">
+  <input name="part" id="campoPart">
+  <input name="total" id="campoTotal">
 </form>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+
 <script>
 const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbyYM2_azshTL_-Y4Ad3QPzl33j-Mpy7lX_AfWSnv8OH0sN_9CkIse1ARFfgTFL9o_aJ7Q/exec';
 const GIF_WORKER_URL='https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js';
-const video=document.getElementById('video'),lienzo=document.getElementById('lienzo'),ctx=lienzo.getContext('2d'),mensaje=document.getElementById('mensaje'),cuenta=document.getElementById('cuenta'),flash=document.getElementById('flash');
-const zonas={individual:[[.085,.18,.83,.64]],cuatro:[[.080,.166,.390,.305],[.530,.166,.390,.305],[.080,.515,.390,.305],[.530,.515,.390,.305]]};
-let modo='individual',marco=null,marcoVista=null,camara=null,capturas=[],fase='menu',sesion=0,ocupado=false,archivoFinal=null,tipoArchivo='jpg',tokenActual=null,guardado=null,temporizadorQR=null,envioRealizado=false,gifURL=null,gifEnProceso=null;
-function visible(id,si){document.getElementById(id).classList.toggle('oculto',!si)}
-function esperar(ms){return new Promise(r=>setTimeout(r,ms))}
-async function mostrarFlash(actual){if(actual!==sesion)return;flash.classList.add('activo');await esperar(130);flash.classList.remove('activo');await esperar(180)}
-function cargarMarco(ruta){return new Promise((ok,fail)=>{const img=new Image();img.onload=()=>ok(img);img.onerror=()=>fail(new Error('No se encontró '+ruta));img.src=ruta+'?v=33'})}
-function detenerCamara(){if(camara){camara.getTracks().forEach(t=>t.stop());camara=null}video.pause();video.srcObject=null}
-function limpiarGIF(){if(gifEnProceso){try{gifEnProceso.abort()}catch(e){}gifEnProceso=null}if(gifURL){URL.revokeObjectURL(gifURL);gifURL=null}document.getElementById('gifImagen').removeAttribute('src');visible('gifImagen',false)}
-async function elegir(tipo){const actual=++sesion;clearTimeout(temporizadorQR);detenerCamara();limpiarGIF();flash.classList.remove('activo');modo=tipo;marco=null;marcoVista=null;capturas=[];archivoFinal=null;tipoArchivo=tipo==='gif'?'gif':'jpg';tokenActual=null;guardado=null;envioRealizado=false;ocupado=false;fase='cargando';cuenta.textContent='';visible('menu',false);visible('qrVista',false);visible('gifVista',false);visible('escenario',true);visible('tomar',false);mensaje.textContent='Preparando cámara...';try{const [nuevoMarco,nuevoMarcoVista]=await Promise.all([cargarMarco(tipo==='cuatro'?'marco-cuatro.png':tipo==='gif'?'marco-gif.png':'marco-individual.png'),tipo==='cuatro'?cargarMarco('marco-individual.png'):Promise.resolve(null)]);if(actual!==sesion)return;marco=nuevoMarco;marcoVista=nuevoMarcoVista||nuevoMarco;lienzo.width=marcoVista.naturalWidth;lienzo.height=marcoVista.naturalHeight;const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:'user',width:{ideal:1280},height:{ideal:960}}});if(actual!==sesion){stream.getTracks().forEach(t=>t.stop());return}camara=stream;video.srcObject=stream;await video.play();if(actual!==sesion)return;fase='camara';visible('tomar',true);mensaje.textContent=tipo==='gif'?'¡Prepárate para 6 poses diferentes!':tipo==='individual'?'¡Ubícate dentro del marco!':'¡Ubícate dentro del encuadre!'}catch(err){mensaje.textContent='No se pudo iniciar la cámara: '+err.message;console.error(err)}}
-function dibujarFotoEn(c,foto,x,y,w,h){const iw=foto.videoWidth||foto.width,ih=foto.videoHeight||foto.height;if(!iw||!ih)return;const escala=Math.max(w/iw,h/ih),sw=w/escala,sh=h/escala,sx=(iw-sw)/2,sy=(ih-sh)/2;c.save();c.translate(x+w,y);c.scale(-1,1);c.filter='sepia(25%) contrast(108%) saturate(85%)';c.drawImage(foto,sx,sy,sw,sh,0,0,w,h);c.restore()}
-function dibujarFoto(foto,x,y,w,h){dibujarFotoEn(ctx,foto,x,y,w,h)}
-function dibujarZona(foto,z){const[x,y,w,h]=z;dibujarFoto(foto,x*lienzo.width,y*lienzo.height,w*lienzo.width,h*lienzo.height)}
-function dibujarCamara(){if(!lienzo.width)return;ctx.clearRect(0,0,lienzo.width,lienzo.height);ctx.fillStyle='#100719';ctx.fillRect(0,0,lienzo.width,lienzo.height);if(video.readyState>=2){zonas.individual.forEach(z=>dibujarZona(video,z))}if(marcoVista)ctx.drawImage(marcoVista,0,0,lienzo.width,lienzo.height)}
-function animar(){if(fase==='camara')dibujarCamara();requestAnimationFrame(animar)}requestAnimationFrame(animar);
-async function contar(actual,cambio){cuenta.classList.add('pose');cuenta.textContent=cambio?'¡CAMBIA DE POSE!':'¡PREPÁRATE!';await esperar(1000);if(actual!==sesion)return false;cuenta.classList.remove('pose');const inicio=modo==='gif'?2:3;for(let n=inicio;n>=1;n--){if(actual!==sesion)return false;cuenta.textContent=n;await esperar(1000)}if(actual!==sesion)return false;cuenta.textContent='';return true}
-function capturar(){if(!video.videoWidth||!video.videoHeight)throw new Error('La cámara todavía no está lista.');const copia=document.createElement('canvas');copia.width=video.videoWidth;copia.height=video.videoHeight;copia.getContext('2d').drawImage(video,0,0,copia.width,copia.height);return copia}
-function componer(){lienzo.width=marco.naturalWidth;lienzo.height=marco.naturalHeight;ctx.fillStyle='#100719';ctx.fillRect(0,0,lienzo.width,lienzo.height);zonas[modo].forEach((z,i)=>{if(capturas[i])dibujarZona(capturas[i],z)});ctx.drawImage(marco,0,0,lienzo.width,lienzo.height)}
-async function tomarFotos(){if(ocupado||fase!=='camara')return;ocupado=true;visible('tomar',false);const actual=sesion,total=modo==='gif'?6:modo==='individual'?1:4;try{for(let i=0;i<total;i++){if(actual!==sesion)return;mensaje.textContent='Fotografía '+(i+1)+' de '+total;const ok=await contar(actual,i>0);if(!ok)return;capturas.push(capturar());await mostrarFlash(actual);if(actual!==sesion)return}detenerCamara();if(modo==='gif'){fase='generando-gif';visible('escenario',false);visible('gifVista',true);mensaje.textContent='';await crearGIF(actual);return}fase='resultado';componer();archivoFinal=lienzo.toDataURL('image/jpeg',.82);tipoArchivo='jpg';mensaje.textContent='¡Así quedó tu fotografía!';iniciarGuardado(actual);temporizadorQR=setTimeout(()=>{if(actual===sesion&&fase==='resultado')pasarAQR()},5000)}catch(err){console.error(err);if(actual===sesion){mensaje.textContent=err.message;if(modo==='gif'){document.getElementById('gifEstado').textContent='No se pudo crear el GIF: '+err.message;visible('gifVista',true)}else visible('tomar',true)}}finally{ocupado=false}}
-async function obtenerWorkerGIF(){const r=await fetch(GIF_WORKER_URL);if(!r.ok)throw new Error('No se pudo cargar el generador de GIF.');return URL.createObjectURL(new Blob([await r.text()],{type:'text/javascript'}))}
-async function crearGIF(actual){const estado=document.getElementById('gifEstado');estado.textContent='Preparando tus 6 fotografías...';if(typeof GIF==='undefined')throw new Error('No se cargó la biblioteca de animaciones.');let workerURL=null;try{workerURL=await obtenerWorkerGIF();if(actual!==sesion)return;const ancho=480,alto=Math.round(ancho*marco.naturalHeight/marco.naturalWidth),gif=new GIF({workers:2,quality:12,width:ancho,height:alto,repeat:0,workerScript:workerURL,background:'#100719'});gifEnProceso=gif;const z=zonas.individual[0];for(let vuelta=0;vuelta<3;vuelta++){for(let i=0;i<6;i++){if(actual!==sesion)return;const cuadro=document.createElement('canvas');cuadro.width=ancho;cuadro.height=alto;const c=cuadro.getContext('2d');c.fillStyle='#100719';c.fillRect(0,0,ancho,alto);dibujarFotoEn(c,capturas[i],z[0]*ancho,z[1]*alto,z[2]*ancho,z[3]*alto);c.drawImage(marco,0,0,ancho,alto);gif.addFrame(cuadro,{copy:true,delay:1000});estado.textContent='Preparando vuelta '+(vuelta+1)+' de 3, foto '+(i+1)+' de 6...'}}const blob=await new Promise((resolve,reject)=>{gif.on('progress',p=>{if(actual===sesion)estado.textContent='Creando GIF... '+Math.round(p*100)+'%'});gif.on('finished',resolve);gif.on('abort',()=>reject(new Error('Generación cancelada.')));try{gif.render()}catch(e){reject(e)}});if(actual!==sesion)return;gifURL=URL.createObjectURL(blob);document.getElementById('gifImagen').src=gifURL;visible('gifImagen',true);estado.textContent='¡Tu GIF está listo!';fase='resultado-gif';archivoFinal=await blobADataURL(blob);if(actual!==sesion)return;tipoArchivo='gif';iniciarGuardado(actual);temporizadorQR=setTimeout(()=>{if(actual===sesion&&fase==='resultado-gif')pasarAQR()},5000)}finally{gifEnProceso=null;if(workerURL)URL.revokeObjectURL(workerURL)}}
-function blobADataURL(blob){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('No se pudo preparar el GIF.'));reader.readAsDataURL(blob)})}
-function generarToken(){const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('')}
-/* ENVÍO SEGURO EN PARTES: 160 000 caracteres base64 = 120 KB por parte */
+
+const video=document.getElementById('video');
+const lienzo=document.getElementById('lienzo');
+const ctx=lienzo.getContext('2d');
+const mensaje=document.getElementById('mensaje');
+const cuenta=document.getElementById('cuenta');
+const flash=document.getElementById('flash');
+
+const zonas={
+  individual:[[.085,.18,.83,.64]],
+  cuatro:[
+    [.080,.166,.390,.305],
+    [.530,.166,.390,.305],
+    [.080,.515,.390,.305],
+    [.530,.515,.390,.305]
+  ]
+};
+
+let modo='individual';
+let marco=null,marcoVista=null,camara=null,capturas=[];
+let fase='menu',sesion=0,ocupado=false;
+let archivoFinal=null,tipoArchivo='jpg',tokenActual=null;
+let guardado=null,temporizadorQR=null,envioRealizado=false;
+let gifURL=null,gifEnProceso=null;
+
+function visible(id,si){
+  document.getElementById(id).classList.toggle('oculto',!si);
+}
+
+function esperar(ms){
+  return new Promise(r=>setTimeout(r,ms));
+}
+
+async function mostrarFlash(actual){
+  if(actual!==sesion)return;
+  flash.classList.add('activo');
+  await esperar(130);
+  flash.classList.remove('activo');
+  await esperar(180);
+}
+
+function cargarMarco(ruta){
+  return new Promise((ok,fail)=>{
+    const img=new Image();
+    img.onload=()=>ok(img);
+    img.onerror=()=>fail(new Error('No se encontró '+ruta));
+    img.src=ruta+'?v=34';
+  });
+}
+
+function detenerCamara(){
+  if(camara){
+    camara.getTracks().forEach(t=>t.stop());
+    camara=null;
+  }
+  video.pause();
+  video.srcObject=null;
+}
+
+function limpiarGIF(){
+  if(gifEnProceso){
+    try{gifEnProceso.abort()}catch(e){}
+    gifEnProceso=null;
+  }
+  if(gifURL){
+    URL.revokeObjectURL(gifURL);
+    gifURL=null;
+  }
+  document.getElementById('gifImagen').removeAttribute('src');
+  visible('gifImagen',false);
+}
+
+async function elegir(tipo){
+  const actual=++sesion;
+  clearTimeout(temporizadorQR);
+  detenerCamara();
+  limpiarGIF();
+  flash.classList.remove('activo');
+
+  modo=tipo;
+  marco=null;
+  marcoVista=null;
+  capturas=[];
+  archivoFinal=null;
+  tipoArchivo=tipo==='gif'?'gif':'jpg';
+  tokenActual=null;
+  guardado=null;
+  envioRealizado=false;
+  ocupado=false;
+  fase='cargando';
+  cuenta.textContent='';
+
+  visible('menu',false);
+  visible('qrVista',false);
+  visible('gifVista',false);
+  visible('escenario',true);
+  visible('tomar',false);
+  mensaje.textContent='Preparando cámara...';
+
+  try{
+    const [nuevoMarco,nuevoMarcoVista]=await Promise.all([
+      cargarMarco(
+        tipo==='cuatro'?'marco-cuatro.png':
+        tipo==='gif'?'marco-gif.png':
+        'marco-individual.png'
+      ),
+      tipo==='cuatro'
+        ?cargarMarco('marco-individual.png')
+        :Promise.resolve(null)
+    ]);
+
+    if(actual!==sesion)return;
+
+    marco=nuevoMarco;
+    marcoVista=nuevoMarcoVista||nuevoMarco;
+
+    lienzo.width=marcoVista.naturalWidth;
+    lienzo.height=marcoVista.naturalHeight;
+
+    const stream=await navigator.mediaDevices.getUserMedia({
+      audio:false,
+      video:{
+        facingMode:'user',
+        width:{ideal:1280},
+        height:{ideal:960}
+      }
+    });
+
+    if(actual!==sesion){
+      stream.getTracks().forEach(t=>t.stop());
+      return;
+    }
+
+    camara=stream;
+    video.srcObject=stream;
+    await video.play();
+
+    if(actual!==sesion)return;
+
+    fase='camara';
+    visible('tomar',true);
+
+    mensaje.textContent=
+      tipo==='gif'?'¡Prepárate para 6 poses diferentes!':
+      tipo==='individual'?'¡Ubícate dentro del marco!':
+      '¡Ubícate dentro del encuadre!';
+
+  }catch(err){
+    mensaje.textContent='No se pudo iniciar la cámara: '+err.message;
+    console.error(err);
+  }
+}
+
+function dibujarFotoEn(c,foto,x,y,w,h){
+  const iw=foto.videoWidth||foto.width;
+  const ih=foto.videoHeight||foto.height;
+  if(!iw||!ih)return;
+
+  const escala=Math.max(w/iw,h/ih);
+  const sw=w/escala;
+  const sh=h/escala;
+  const sx=(iw-sw)/2;
+  const sy=(ih-sh)/2;
+
+  c.save();
+  c.translate(x+w,y);
+  c.scale(-1,1);
+  c.filter='sepia(25%) contrast(108%) saturate(85%)';
+  c.drawImage(foto,sx,sy,sw,sh,0,0,w,h);
+  c.restore();
+}
+
+function dibujarFoto(foto,x,y,w,h){
+  dibujarFotoEn(ctx,foto,x,y,w,h);
+}
+
+function dibujarZona(foto,z){
+  const[x,y,w,h]=z;
+  dibujarFoto(
+    foto,
+    x*lienzo.width,
+    y*lienzo.height,
+    w*lienzo.width,
+    h*lienzo.height
+  );
+}
+
+function dibujarCamara(){
+  if(!lienzo.width)return;
+
+  ctx.clearRect(0,0,lienzo.width,lienzo.height);
+  ctx.fillStyle='#100719';
+  ctx.fillRect(0,0,lienzo.width,lienzo.height);
+
+  if(video.readyState>=2){
+    zonas.individual.forEach(z=>dibujarZona(video,z));
+  }
+
+  if(marcoVista){
+    ctx.drawImage(marcoVista,0,0,lienzo.width,lienzo.height);
+  }
+}
+
+function animar(){
+  if(fase==='camara')dibujarCamara();
+  requestAnimationFrame(animar);
+}
+requestAnimationFrame(animar);
+
+async function contar(actual,cambio){
+  cuenta.classList.add('pose');
+  cuenta.textContent=cambio?'¡CAMBIA DE POSE!':'¡PREPÁRATE!';
+  await esperar(1000);
+
+  if(actual!==sesion)return false;
+
+  cuenta.classList.remove('pose');
+
+  const inicio=modo==='gif'?2:3;
+
+  for(let n=inicio;n>=1;n--){
+    if(actual!==sesion)return false;
+    cuenta.textContent=n;
+    await esperar(1000);
+  }
+
+  if(actual!==sesion)return false;
+
+  cuenta.textContent='';
+  return true;
+}
+
+function capturar(){
+  if(!video.videoWidth||!video.videoHeight){
+    throw new Error('La cámara todavía no está lista.');
+  }
+
+  const copia=document.createElement('canvas');
+  copia.width=video.videoWidth;
+  copia.height=video.videoHeight;
+
+  copia.getContext('2d').drawImage(
+    video,0,0,copia.width,copia.height
+  );
+
+  return copia;
+}
+
+function componer(){
+  lienzo.width=marco.naturalWidth;
+  lienzo.height=marco.naturalHeight;
+
+  ctx.fillStyle='#100719';
+  ctx.fillRect(0,0,lienzo.width,lienzo.height);
+
+  zonas[modo].forEach((z,i)=>{
+    if(capturas[i])dibujarZona(capturas[i],z);
+  });
+
+  ctx.drawImage(marco,0,0,lienzo.width,lienzo.height);
+}
+
+async function tomarFotos(){
+  if(ocupado||fase!=='camara')return;
+
+  ocupado=true;
+  visible('tomar',false);
+
+  const actual=sesion;
+  const total=modo==='gif'?6:modo==='individual'?1:4;
+
+  try{
+    for(let i=0;i<total;i++){
+      if(actual!==sesion)return;
+
+      mensaje.textContent='Fotografía '+(i+1)+' de '+total;
+
+      const ok=await contar(actual,i>0);
+      if(!ok)return;
+
+      capturas.push(capturar());
+      await mostrarFlash(actual);
+
+      if(actual!==sesion)return;
+    }
+
+    detenerCamara();
+
+    if(modo==='gif'){
+      fase='generando-gif';
+      visible('escenario',false);
+      visible('gifVista',true);
+      mensaje.textContent='';
+      await crearGIF(actual);
+      return;
+    }
+
+    fase='resultado';
+    componer();
+
+    // CALIDAD JPG OPTIMIZADA: 75 %
+    // Conserva las dimensiones y la fotografía completa.
+    archivoFinal=lienzo.toDataURL('image/jpeg',0.75);
+    tipoArchivo='jpg';
+
+    mensaje.textContent='¡Así quedó tu fotografía!';
+
+    // El guardado empieza mientras se muestra el resultado.
+    iniciarGuardado(actual);
+
+    temporizadorQR=setTimeout(()=>{
+      if(actual===sesion&&fase==='resultado')pasarAQR();
+    },5000);
+
+  }catch(err){
+    console.error(err);
+
+    if(actual===sesion){
+      mensaje.textContent=err.message;
+
+      if(modo==='gif'){
+        document.getElementById('gifEstado').textContent=
+          'No se pudo crear el GIF: '+err.message;
+        visible('gifVista',true);
+      }else{
+        visible('tomar',true);
+      }
+    }
+  }finally{
+    ocupado=false;
+  }
+}
+
+async function obtenerWorkerGIF(){
+  const r=await fetch(GIF_WORKER_URL);
+
+  if(!r.ok){
+    throw new Error('No se pudo cargar el generador de GIF.');
+  }
+
+  return URL.createObjectURL(
+    new Blob([await r.text()],{type:'text/javascript'})
+  );
+}
+
+async function crearGIF(actual){
+  const estado=document.getElementById('gifEstado');
+  estado.textContent='Preparando tus 6 fotografías...';
+
+  if(typeof GIF==='undefined'){
+    throw new Error('No se cargó la biblioteca de animaciones.');
+  }
+
+  let workerURL=null;
+
+  try{
+    workerURL=await obtenerWorkerGIF();
+    if(actual!==sesion)return;
+
+    const ancho=480;
+    const alto=Math.round(
+      ancho*marco.naturalHeight/marco.naturalWidth
+    );
+
+    const gif=new GIF({
+      workers:2,
+      quality:12,
+      width:ancho,
+      height:alto,
+      repeat:0,
+      workerScript:workerURL,
+      background:'#100719'
+    });
+
+    gifEnProceso=gif;
+
+    const z=zonas.individual[0];
+
+    for(let vuelta=0;vuelta<3;vuelta++){
+      for(let i=0;i<6;i++){
+        if(actual!==sesion)return;
+
+        const cuadro=document.createElement('canvas');
+        cuadro.width=ancho;
+        cuadro.height=alto;
+
+        const c=cuadro.getContext('2d');
+
+        c.fillStyle='#100719';
+        c.fillRect(0,0,ancho,alto);
+
+        dibujarFotoEn(
+          c,capturas[i],
+          z[0]*ancho,
+          z[1]*alto,
+          z[2]*ancho,
+          z[3]*alto
+        );
+
+        c.drawImage(marco,0,0,ancho,alto);
+
+        gif.addFrame(cuadro,{copy:true,delay:1000});
+
+        estado.textContent=
+          'Preparando vuelta '+(vuelta+1)+
+          ' de 3, foto '+(i+1)+' de 6...';
+      }
+    }
+
+    const blob=await new Promise((resolve,reject)=>{
+      gif.on('progress',p=>{
+        if(actual===sesion){
+          estado.textContent=
+            'Creando GIF... '+Math.round(p*100)+'%';
+        }
+      });
+
+      gif.on('finished',resolve);
+      gif.on('abort',()=>{
+        reject(new Error('Generación cancelada.'));
+      });
+
+      try{
+        gif.render();
+      }catch(e){
+        reject(e);
+      }
+    });
+
+    if(actual!==sesion)return;
+
+    gifURL=URL.createObjectURL(blob);
+    document.getElementById('gifImagen').src=gifURL;
+    visible('gifImagen',true);
+
+    estado.textContent='¡Tu GIF está listo!';
+    fase='resultado-gif';
+
+    archivoFinal=await blobADataURL(blob);
+    if(actual!==sesion)return;
+
+    tipoArchivo='gif';
+    iniciarGuardado(actual);
+
+    temporizadorQR=setTimeout(()=>{
+      if(actual===sesion&&fase==='resultado-gif')pasarAQR();
+    },5000);
+
+  }finally{
+    gifEnProceso=null;
+    if(workerURL)URL.revokeObjectURL(workerURL);
+  }
+}
+
+function blobADataURL(blob){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=()=>reject(
+      new Error('No se pudo preparar el GIF.')
+    );
+
+    reader.readAsDataURL(blob);
+  });
+}
+
+function generarToken(){
+  const bytes=new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+
+  return Array.from(
+    bytes,b=>b.toString(16).padStart(2,'0')
+  ).join('');
+}
+
+/*
+  ENVÍO SEGURO EN PARTES.
+  Cada parte contiene 160 000 caracteres base64.
+  No se modifica este sistema para evitar
+  fotografías incompletas.
+*/
 const CHUNK_CHARS=160000;
-function enviarFormulario(action,token,part,total,tipo,data){const form=document.getElementById('envioForm');form.action=APPS_SCRIPT_URL;document.getElementById('campoAction').value=action;document.getElementById('campoToken').value=token;document.getElementById('campoPart').value=part===null?'':String(part);document.getElementById('campoTotal').value=String(total);document.getElementById('campoTipo').value=tipo;document.getElementById('campoFoto').value=data||'';form.submit();document.getElementById('campoFoto').value=''}
+
+function enviarFormulario(action,token,part,total,tipo,data){
+  const form=document.getElementById('envioForm');
+
+  form.action=APPS_SCRIPT_URL;
+
+  document.getElementById('campoAction').value=action;
+  document.getElementById('campoToken').value=token;
+  document.getElementById('campoPart').value=
+    part===null?'':String(part);
+  document.getElementById('campoTotal').value=String(total);
+  document.getElementById('campoTipo').value=tipo;
+  document.getElementById('campoFoto').value=data||'';
+
+  form.submit();
+
+  document.getElementById('campoFoto').value='';
+}
+
 let callbackSerial=0;
-function consultarRespuesta(token,part,actual){return new Promise((resolve,reject)=>{let intentos=0;const consultar=()=>{if(actual!==sesion)return reject(new Error('Sesión cancelada'));if(++intentos>50)return reject(new Error('El servidor tardó demasiado. Comprueba tu conexión.'));const callback='naluCheck_'+(++callbackSerial),script=document.createElement('script');let terminado=false;const limpiar=()=>{script.remove();delete window[callback]};window[callback]=r=>{if(terminado)return;terminado=true;limpiar();if(r.pendiente){setTimeout(consultar,900)}else if(r.ok){resolve(r)}else{reject(new Error(r.mensaje||'Error al guardar'))}};script.onerror=()=>{if(terminado)return;terminado=true;limpiar();setTimeout(consultar,1200)};script.src=APPS_SCRIPT_URL+'?token='+encodeURIComponent(token)+(part===null?'':'&part='+part)+'&callback='+callback+'&t='+Date.now();document.head.appendChild(script)};setTimeout(consultar,700)})}
-async function iniciarGuardado(actual){if(!archivoFinal||envioRealizado)return;envioRealizado=true;const token=generarToken();tokenActual=token;const base64=archivoFinal.split(',')[1],total=Math.ceil(base64.length/CHUNK_CHARS);try{if(total>80)throw new Error('El archivo es demasiado grande para enviarlo.');for(let i=0;i<total;i++){if(actual!==sesion)return;const data=base64.slice(i*CHUNK_CHARS,(i+1)*CHUNK_CHARS);mensaje.textContent='Guardando '+(i+1)+' de '+total+' partes...';if(fase==='qr')document.getElementById('qrEstado').textContent=mensaje.textContent;enviarFormulario('chunk',token,i,total,tipoArchivo,data);await consultarRespuesta(token,i,actual)}if(actual!==sesion)return;mensaje.textContent='Verificando archivo completo...';enviarFormulario('finish',token,null,total,tipoArchivo,'');const result=await consultarRespuesta(token,null,actual);if(actual!==sesion)return;guardado=result;if(fase==='qr')actualizarQR();else mensaje.textContent='¡Archivo guardado correctamente!'}catch(e){if(actual!==sesion)return;guardado={ok:false,mensaje:e.message};if(fase==='qr')actualizarQR();else mensaje.textContent='Error al guardar: '+e.message;console.error(e)}}
-function pasarAQR(){if(!archivoFinal)return;clearTimeout(temporizadorQR);fase='qr';visible('escenario',false);visible('gifVista',false);visible('qrVista',true);document.getElementById('qrTitulo').textContent=tipoArchivo==='gif'?'¡Tu GIF está listo!':'¡Tu foto está lista!';document.getElementById('qrInstruccion').textContent=tipoArchivo==='gif'?'Escanea el QR para abrir y descargar tu GIF animado.':'Escanea el QR para abrir y descargar tu fotografía.';mensaje.textContent='';actualizarQR()}
-function actualizarQR(){const estado=document.getElementById('qrEstado'),img=document.getElementById('qrImagen');visible('qrImagen',false);if(guardado&&guardado.ok&&guardado.url){estado.textContent=tipoArchivo==='gif'?'¡GIF guardado! Escanea tu QR.':'¡Fotografía guardada! Escanea tu QR.';img.src='https://api.qrserver.com/v1/create-qr-code/?size=350x350&data='+encodeURIComponent(guardado.url);visible('qrImagen',true)}else if(guardado&&!guardado.ok){estado.textContent='No se pudo guardar: '+guardado.mensaje}else{estado.textContent='Guardando y verificando el archivo...'}}
-function reiniciar(){++sesion;clearTimeout(temporizadorQR);detenerCamara();limpiarGIF();flash.classList.remove('activo');fase='menu';ocupado=false;marco=null;marcoVista=null;capturas=[];archivoFinal=null;tipoArchivo='jpg';tokenActual=null;guardado=null;envioRealizado=false;cuenta.textContent='';mensaje.textContent='';visible('escenario',false);visible('qrVista',false);visible('gifVista',false);visible('tomar',false);visible('menu',true)}
-if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.error))}
+
+function consultarRespuesta(token,part,actual){
+  return new Promise((resolve,reject)=>{
+    let intentos=0;
+
+    const consultar=()=>{
+      if(actual!==sesion){
+        return reject(new Error('Sesión cancelada'));
+      }
+
+      if(++intentos>50){
+        return reject(
+          new Error('El servidor tardó demasiado. Comprueba tu conexión.')
+        );
+      }
+
+      const callback='naluCheck_'+(++callbackSerial);
+      const script=document.createElement('script');
+      let terminado=false;
+
+      const limpiar=()=>{
+        script.remove();
+        delete window[callback];
+      };
+
+      window[callback]=r=>{
+        if(terminado)return;
+
+        terminado=true;
+        limpiar();
+
+        if(r.pendiente){
+          setTimeout(consultar,900);
+        }else if(r.ok){
+          resolve(r);
+        }else{
+          reject(new Error(r.mensaje||'Error al guardar'));
+        }
+      };
+
+      script.onerror=()=>{
+        if(terminado)return;
+
+        terminado=true;
+        limpiar();
+        setTimeout(consultar,1200);
+      };
+
+      script.src=APPS_SCRIPT_URL+
+        '?token='+encodeURIComponent(token)+
+        (part===null?'':'&part='+part)+
+        '&callback='+callback+
+        '&t='+Date.now();
+
+      document.head.appendChild(script);
+    };
+
+    setTimeout(consultar,700);
+  });
+}
+
+async function iniciarGuardado(actual){
+  if(!archivoFinal||envioRealizado)return;
+
+  envioRealizado=true;
+
+  const token=generarToken();
+  tokenActual=token;
+
+  const base64=archivoFinal.split(',')[1];
+  const total=Math.ceil(base64.length/CHUNK_CHARS);
+
+  try{
+    if(total>80){
+      throw new Error(
+        'El archivo es demasiado grande para enviarlo.'
+      );
+    }
+
+    for(let i=0;i<total;i++){
+      if(actual!==sesion)return;
+
+      const data=base64.slice(
+        i*CHUNK_CHARS,
+        (i+1)*CHUNK_CHARS
+      );
+
+      mensaje.textContent=
+        'Guardando '+(i+1)+' de '+total+' partes...';
+
+      if(fase==='qr'){
+        document.getElementById('qrEstado').textContent=
+          mensaje.textContent;
+      }
+
+      enviarFormulario(
+        'chunk',token,i,total,tipoArchivo,data
+      );
+
+      await consultarRespuesta(token,i,actual);
+    }
+
+    if(actual!==sesion)return;
+
+    mensaje.textContent='Verificando archivo completo...';
+
+    enviarFormulario(
+      'finish',token,null,total,tipoArchivo,''
+    );
+
+    const result=await consultarRespuesta(
+      token,null,actual
+    );
+
+    if(actual!==sesion)return;
+
+    guardado=result;
+
+    if(fase==='qr'){
+      actualizarQR();
+    }else{
+      mensaje.textContent=
+        '¡Archivo guardado correctamente!';
+    }
+
+  }catch(e){
+    if(actual!==sesion)return;
+
+    guardado={ok:false,mensaje:e.message};
+
+    if(fase==='qr'){
+      actualizarQR();
+    }else{
+      mensaje.textContent=
+        'Error al guardar: '+e.message;
+    }
+
+    console.error(e);
+  }
+}
+
+function pasarAQR(){
+  if(!archivoFinal)return;
+
+  clearTimeout(temporizadorQR);
+  fase='qr';
+
+  visible('escenario',false);
+  visible('gifVista',false);
+  visible('qrVista',true);
+
+  document.getElementById('qrTitulo').textContent=
+    tipoArchivo==='gif'
+      ?'¡Tu GIF está listo!'
+      :'¡Tu foto está lista!';
+
+  document.getElementById('qrInstruccion').textContent=
+    tipoArchivo==='gif'
+      ?'Escanea el QR para abrir y descargar tu GIF animado.'
+      :'Escanea el QR para abrir y descargar tu fotografía.';
+
+  mensaje.textContent='';
+  actualizarQR();
+}
+
+function actualizarQR(){
+  const estado=document.getElementById('qrEstado');
+  const img=document.getElementById('qrImagen');
+
+  visible('qrImagen',false);
+
+  if(guardado&&guardado.ok&&guardado.url){
+    estado.textContent=
+      tipoArchivo==='gif'
+        ?'¡GIF guardado! Escanea tu QR.'
+        :'¡Fotografía guardada! Escanea tu QR.';
+
+    img.src=
+      'https://api.qrserver.com/v1/create-qr-code/?size=350x350&data='+
+      encodeURIComponent(guardado.url);
+
+    visible('qrImagen',true);
+
+  }else if(guardado&&!guardado.ok){
+    estado.textContent=
+      'No se pudo guardar: '+guardado.mensaje;
+
+  }else{
+    estado.textContent=
+      'Guardando y verificando el archivo...';
+  }
+}
+
+function reiniciar(){
+  ++sesion;
+
+  clearTimeout(temporizadorQR);
+  detenerCamara();
+  limpiarGIF();
+  flash.classList.remove('activo');
+
+  fase='menu';
+  ocupado=false;
+  marco=null;
+  marcoVista=null;
+  capturas=[];
+  archivoFinal=null;
+  tipoArchivo='jpg';
+  tokenActual=null;
+  guardado=null;
+  envioRealizado=false;
+  cuenta.textContent='';
+  mensaje.textContent='';
+
+  visible('escenario',false);
+  visible('qrVista',false);
+  visible('gifVista',false);
+  visible('tomar',false);
+  visible('menu',true);
+}
+
+if('serviceWorker'in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker
+      .register('./sw.js')
+      .catch(console.error);
+  });
+}
 </script>
 </body>
 </html>
