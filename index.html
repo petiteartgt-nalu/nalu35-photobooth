@@ -1,14 +1,18 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>NaLu's 35 Photobooth</title>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+<link
+  href="https://fonts.googleapis.com/css2?family=Righteous&display=swap"
+  rel="stylesheet"
+>
 
+<style>
 * {
   box-sizing: border-box;
 }
@@ -16,21 +20,17 @@
 html, body {
   margin: 0;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   background: #100719;
   color: white;
-  font-family: 'Righteous', cursive;
-}
-
-body {
+  font-family: Righteous, cursive;
   text-align: center;
 }
 
 .app {
-  width: 100%;
-  max-width: 540px;
   height: 100vh;
   height: 100dvh;
+  max-width: 560px;
   margin: auto;
   padding: 8px 12px;
   display: flex;
@@ -40,17 +40,17 @@ body {
 }
 
 h1 {
-  margin: 4px 0 2px;
-  font-size: 26px;
+  margin: 3px 0 1px;
   color: #ff38be;
-  text-shadow: 0 0 12px #ff0099;
+  font-size: 26px;
+  text-shadow: 0 0 13px #ff0099;
 }
 
-.subtitulo {
+.sub {
   margin: 0 0 8px;
-  color: #76edfa;
   font-size: 11px;
   letter-spacing: 2px;
+  color: #79eaf5;
 }
 
 #escenario {
@@ -70,60 +70,70 @@ h1 {
   width: auto;
   height: auto;
   object-fit: contain;
-  border-radius: 6px;
+  border-radius: 5px;
 }
 
-#cuenta {
+#superposicion {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px;
-  font-family: 'Righteous', cursive;
-  font-size: 95px;
-  color: white;
-  text-align: center;
-  line-height: 1.1;
+  pointer-events: none;
+}
+
+#tomar {
+  pointer-events: auto;
+  box-shadow:
+    0 0 15px #ff35bd,
+    0 0 32px #ff35bd;
+  border: 2px solid #fff;
+  font-size: 20px;
+  padding: 17px 25px;
+}
+
+#cuenta {
+  font-size: clamp(72px, 18vw, 110px);
+  line-height: 1.05;
+  color: #fff;
   text-shadow:
     0 0 12px #ff00c8,
-    0 0 28px #ff00c8,
-    0 0 45px #ff00c8;
-  pointer-events: none;
+    0 0 30px #ff00c8,
+    0 0 50px #ff00c8;
+  padding: 12px;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+#cuenta.pose {
+  font-size: clamp(32px, 8vw, 58px);
 }
 
 #mensaje {
   min-height: 18px;
-  margin: 6px 0;
-  color: #8df1f8;
+  margin: 7px 0;
+  color: #89f1f7;
   font-size: 12px;
 }
 
-.controles {
-  flex-shrink: 0;
-  width: 100%;
-  padding-bottom: 5px;
-}
-
 button {
-  font-family: 'Righteous', cursive;
-  font-size: 14px;
+  font-family: Righteous, cursive;
+  background: #38174b;
   color: white;
-  background: #3b174e;
   border: 1px solid #ff4bc9;
-  border-radius: 20px;
-  padding: 11px 17px;
-  margin: 3px;
+  border-radius: 30px;
+  padding: 11px 18px;
+  font-size: 14px;
   cursor: pointer;
 }
 
 button:disabled {
-  opacity: .45;
+  opacity: .55;
 }
 
 .principal {
   background: #ff36b9;
-  color: #16051b;
+  color: #190721;
 }
 
 .oculto {
@@ -132,7 +142,7 @@ button:disabled {
 
 #menu, #qrVista {
   width: 100%;
-  max-width: 360px;
+  max-width: 370px;
   margin: auto;
   padding: 20px;
   border: 2px solid #ff36b9;
@@ -140,24 +150,43 @@ button:disabled {
   background: #24102f;
 }
 
-#menu h2, #qrVista h2 {
-  font-size: 21px;
-}
-
 #menu button {
   display: block;
   width: 100%;
-  margin: 12px auto;
+  margin: 13px auto;
+}
+
+#qrVista {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#qrVista h2 {
+  margin: 0;
+  color: #ff61ce;
+  font-size: 22px;
 }
 
 #qrVista p {
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
 }
 
-#qrIcono {
-  font-size: 65px;
-  margin: 20px 0;
+#qrImagen {
+  display: block;
+  width: min(65vw, 230px);
+  height: auto;
+  background: white;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+#qrEstado {
+  color: #8ceaf4;
+  font-size: 13px;
 }
 
 #video {
@@ -169,6 +198,20 @@ button:disabled {
   opacity: 0;
   pointer-events: none;
 }
+
+#controlesFinal {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-bottom: 5px;
+}
+
+#qrEnlace {
+  color: #8ceaf4;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
 </style>
 </head>
 
@@ -177,7 +220,8 @@ button:disabled {
 <div class="app">
 
   <h1>NaLu's 35</h1>
-  <p class="subtitulo">
+
+  <p class="sub">
     PHOTOBOOTH · 18.12.2026
   </p>
 
@@ -195,77 +239,114 @@ button:disabled {
 
   <div id="escenario" class="oculto">
     <canvas id="lienzo"></canvas>
-    <div id="cuenta"></div>
+
+    <div id="superposicion">
+      <button
+        id="tomar"
+        class="principal oculto"
+        onclick="tomarFotos()"
+      >
+        TOMAR FOTO
+      </button>
+
+      <div id="cuenta"></div>
+    </div>
   </div>
 
   <section id="qrVista" class="oculto">
-    <h2>¡Tu fotografía está lista!</h2>
+    <h2>¡Tu foto está lista!</h2>
 
-    <div id="qrIcono">▦</div>
+    <div id="qrEstado">
+      Guardando fotografía...
+    </div>
+
+    <img
+      id="qrImagen"
+      class="oculto"
+      alt="Código QR de la fotografía"
+    >
+
+    <a
+      id="qrEnlace"
+      class="oculto"
+      target="_blank"
+      rel="noopener"
+    >
+      Abrir fotografía
+    </a>
 
     <p>
-      Aquí aparecerá el código QR cuando
-      conectemos Google Drive.
+      Escanea el QR para abrir y descargar
+      tu fotografía.
     </p>
 
-    <button class="principal" onclick="descargar()">
-      Descargar fotografía
+    <button
+      id="reintentar"
+      class="oculto"
+      onclick="reintentarGuardado()"
+    >
+      Reintentar guardado
+    </button>
+
+    <button
+      class="principal"
+      onclick="reiniciar()"
+    >
+      SIGUIENTE
     </button>
   </section>
 
   <p id="mensaje"></p>
 
-  <div class="controles">
+  <div id="controlesFinal" class="oculto">
+    <button onclick="reiniciar()">
+      Repetir
+    </button>
 
-    <div id="controlesCamara" class="oculto">
-      <button id="tomar"
-              class="principal"
-              onclick="tomarFotos()">
-        TOMAR FOTO
-      </button>
-
-      <button onclick="reiniciar()">
-        Volver
-      </button>
-    </div>
-
-    <div id="controlesFoto" class="oculto">
-      <button class="principal" onclick="mostrarQR()">
-        Siguiente ›
-      </button>
-
-      <button onclick="reiniciar()">
-        Repetir
-      </button>
-    </div>
-
-    <div id="controlesQR" class="oculto">
-      <button class="principal" onclick="reiniciar()">
-        Nueva fotografía
-      </button>
-    </div>
-
+    <button
+      onclick="pasarAQR()"
+      class="principal"
+    >
+      Ver QR ahora
+    </button>
   </div>
 
-  <video id="video" autoplay muted playsinline></video>
+  <video
+    id="video"
+    autoplay
+    muted
+    playsinline
+  ></video>
 
 </div>
 
-<script>
-const video = document.getElementById("video");
-const lienzo = document.getElementById("lienzo");
-const ctx = lienzo.getContext("2d");
-const mensaje = document.getElementById("mensaje");
-const cuenta = document.getElementById("cuenta");
+<iframe
+  id="envioFrame"
+  name="envioFrame"
+  style="display:none"
+  title="Guardado de fotografía"
+></iframe>
 
-let modo = "individual";
-let marco = null;
-let camara = null;
-let capturas = [];
-let fase = "menu";
-let ocupado = false;
-let sesion = 0;
-let archivoFinal = null;
+<form
+  id="envioForm"
+  method="POST"
+  target="envioFrame"
+  style="display:none"
+>
+  <input name="foto" id="campoFoto">
+</form>
+
+<script>
+
+const APPS_SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbyYM2_azshTL_-Y4Ad3QPzl33j-Mpy7lX_AfWSnv8OH0sN_9CkIse1ARFfgTFL9o_aJ7Q/exec';
+
+const video = document.getElementById('video');
+const lienzo = document.getElementById('lienzo');
+const ctx = lienzo.getContext('2d');
+const mensaje = document.getElementById('mensaje');
+const cuenta = document.getElementById('cuenta');
+const tomar = document.getElementById('tomar');
 
 const zonas = {
   individual: [
@@ -279,28 +360,37 @@ const zonas = {
   ]
 };
 
-function visible(id, mostrar) {
+let modo = 'individual';
+let marco = null;
+let camara = null;
+let capturas = [];
+let fase = 'menu';
+let sesion = 0;
+let ocupado = false;
+let archivoFinal = null;
+let guardado = null;
+let guardando = false;
+let temporizadorQR = null;
+
+function visible(id, si) {
   document.getElementById(id)
-    .classList.toggle("oculto", !mostrar);
+    .classList.toggle('oculto', !si);
 }
 
-function controles(nombre) {
-  visible("controlesCamara", nombre === "camara");
-  visible("controlesFoto", nombre === "foto");
-  visible("controlesQR", nombre === "qr");
+function esperar(ms) {
+  return new Promise(r => setTimeout(r, ms));
 }
 
 function cargarMarco(ruta) {
-  return new Promise((resolve, reject) => {
+  return new Promise((ok, fail) => {
     const img = new Image();
 
-    img.onload = () => resolve(img);
+    img.onload = () => ok(img);
 
-    img.onerror = () => reject(
-      new Error("No se encontró " + ruta)
-    );
+    img.onerror = () =>
+      fail(new Error('No se encontró ' + ruta));
 
-    img.src = ruta + "?v=9";
+    img.src = ruta + '?v=11';
   });
 }
 
@@ -314,37 +404,50 @@ function detenerCamara() {
   video.srcObject = null;
 }
 
+function cancelarTiempo() {
+  if (temporizadorQR) {
+    clearTimeout(temporizadorQR);
+    temporizadorQR = null;
+  }
+}
+
 async function elegir(tipo) {
   const actual = ++sesion;
 
+  cancelarTiempo();
   detenerCamara();
 
   modo = tipo;
+  marco = null;
   capturas = [];
   archivoFinal = null;
+  guardado = null;
+  guardando = false;
   ocupado = false;
-  fase = "cargando";
-  marco = null;
+  fase = 'cargando';
 
-  visible("menu", false);
-  visible("escenario", true);
-  visible("qrVista", false);
-  controles("");
+  cuenta.textContent = '';
 
-  mensaje.textContent = "Preparando cámara...";
+  visible('menu', false);
+  visible('qrVista', false);
+  visible('escenario', true);
+  visible('controlesFinal', false);
+  visible('tomar', false);
+
+  mensaje.textContent = 'Preparando cámara...';
 
   try {
-    marco = await cargarMarco(
-      tipo === "individual"
-        ? "marco-individual.png"
-        : "marco-cuatro.png"
+    const nuevoMarco = await cargarMarco(
+      tipo === 'individual'
+        ? 'marco-individual.png'
+        : 'marco-cuatro.png'
     );
 
     if (actual !== sesion) return;
 
-    // Individual: formato del marco.
-    // Cuatro: vista amplia de cámara.
-    if (tipo === "individual") {
+    marco = nuevoMarco;
+
+    if (tipo === 'individual') {
       lienzo.width = marco.naturalWidth;
       lienzo.height = marco.naturalHeight;
     } else {
@@ -352,42 +455,44 @@ async function elegir(tipo) {
       lienzo.height = 960;
     }
 
-    const nuevaCamara =
+    const stream =
       await navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
-          facingMode: "user",
+          facingMode: 'user',
           width: { ideal: 1280 },
           height: { ideal: 960 }
         }
       });
 
     if (actual !== sesion) {
-      nuevaCamara.getTracks().forEach(t => t.stop());
+      stream.getTracks().forEach(t => t.stop());
       return;
     }
 
-    camara = nuevaCamara;
-    video.srcObject = camara;
+    camara = stream;
+    video.srcObject = stream;
 
     await video.play();
 
     if (actual !== sesion) return;
 
-    fase = "camara";
-    controles("camara");
+    fase = 'camara';
+
+    visible('tomar', true);
 
     mensaje.textContent =
-      tipo === "individual"
-        ? "¡Ubícate dentro del marco!"
-        : "¡Prepárate para tus 4 poses!";
+      tipo === 'individual'
+        ? '¡Ubícate dentro del marco!'
+        : '¡Prepárate para tus cuatro poses!';
 
-  } catch (error) {
+  } catch (err) {
     mensaje.textContent =
-      "No se pudo iniciar: " + error.message;
+      'No se pudo iniciar la cámara: ' +
+      err.message;
 
-    console.error(error);
-    controles("");
+    console.error(err);
+    visible('tomar', false);
   }
 }
 
@@ -405,13 +510,11 @@ function dibujarFoto(foto, x, y, w, h) {
 
   ctx.save();
 
-  // Efecto espejo.
   ctx.translate(x + w, y);
   ctx.scale(-1, 1);
 
-  // Filtro vintage.
   ctx.filter =
-    "sepia(25%) contrast(108%) saturate(85%)";
+    'sepia(25%) contrast(108%) saturate(85%)';
 
   ctx.drawImage(
     foto,
@@ -422,7 +525,19 @@ function dibujarFoto(foto, x, y, w, h) {
   ctx.restore();
 }
 
-function dibujarEscena() {
+function dibujarZona(foto, zona) {
+  const [x, y, w, h] = zona;
+
+  dibujarFoto(
+    foto,
+    x * lienzo.width,
+    y * lienzo.height,
+    w * lienzo.width,
+    h * lienzo.height
+  );
+}
+
+function dibujarCamara() {
   if (!lienzo.width) return;
 
   ctx.clearRect(
@@ -430,65 +545,40 @@ function dibujarEscena() {
     lienzo.width, lienzo.height
   );
 
-  ctx.fillStyle = "#100719";
+  ctx.fillStyle = '#100719';
+
   ctx.fillRect(
     0, 0,
     lienzo.width, lienzo.height
   );
 
-  // MODO INDIVIDUAL:
-  // cámara dentro del marco.
-  if (modo === "individual") {
-
-    if (capturas[0]) {
-      dibujarZona(capturas[0], zonas.individual[0]);
-
-    } else if (
-      fase === "camara" &&
-      video.readyState >= 2
-    ) {
+  if (modo === 'individual') {
+    if (video.readyState >= 2) {
       dibujarZona(video, zonas.individual[0]);
     }
 
     if (marco) {
       ctx.drawImage(
-        marco, 0, 0,
-        lienzo.width, lienzo.height
-      );
-    }
-
-  } else if (modo === "cuatro") {
-
-    // MODO CUATRO:
-    // cámara grande, sin marco ni divisiones.
-    if (
-      fase === "camara" &&
-      video.readyState >= 2
-    ) {
-      dibujarFoto(
-        video,
+        marco,
         0, 0,
-        lienzo.width, lienzo.height
+        lienzo.width,
+        lienzo.height
       );
     }
+
+  } else if (video.readyState >= 2) {
+    dibujarFoto(
+      video,
+      0, 0,
+      lienzo.width,
+      lienzo.height
+    );
   }
 }
 
-function dibujarZona(foto, zona) {
-  const [px, py, pw, ph] = zona;
-
-  dibujarFoto(
-    foto,
-    px * lienzo.width,
-    py * lienzo.height,
-    pw * lienzo.width,
-    ph * lienzo.height
-  );
-}
-
 function animar() {
-  if (fase === "camara") {
-    dibujarEscena();
+  if (fase === 'camara') {
+    dibujarCamara();
   }
 
   requestAnimationFrame(animar);
@@ -496,51 +586,46 @@ function animar() {
 
 requestAnimationFrame(animar);
 
-function esperar(ms) {
-  return new Promise(resolve =>
-    setTimeout(resolve, ms)
-  );
-}
+async function contar(actual, cambio) {
+  if (cambio) {
+    cuenta.classList.add('pose');
 
-async function contar(actual, cambioDePose = false) {
-
-  if (cambioDePose) {
-    cuenta.style.fontSize =
-      "clamp(35px, 8vw, 65px)";
-
-    cuenta.textContent = "¡CAMBIA DE POSE!";
+    cuenta.textContent = '¡CAMBIA DE POSE!';
 
     await esperar(1000);
 
     if (actual !== sesion) return false;
   }
 
-  cuenta.style.fontSize = "95px";
+  cuenta.classList.remove('pose');
 
-  for (let n = 4; n >= 1; n--) {
+  for (let n = 5; n >= 1; n--) {
     if (actual !== sesion) return false;
 
     cuenta.textContent = n;
+
     await esperar(1000);
   }
 
   if (actual !== sesion) return false;
 
-  cuenta.textContent = "";
+  cuenta.textContent = '';
   return true;
 }
 
-function capturarFotograma() {
+function capturar() {
   if (!video.videoWidth || !video.videoHeight) {
-    throw new Error("La cámara todavía no está lista.");
+    throw new Error(
+      'La cámara todavía no está lista.'
+    );
   }
 
-  const copia = document.createElement("canvas");
+  const copia = document.createElement('canvas');
 
   copia.width = video.videoWidth;
   copia.height = video.videoHeight;
 
-  copia.getContext("2d").drawImage(
+  copia.getContext('2d').drawImage(
     video,
     0, 0,
     copia.width,
@@ -550,21 +635,16 @@ function capturarFotograma() {
   return copia;
 }
 
-function crearComposicionFinal() {
-  // Para las cuatro fotos cambiamos el lienzo
-  // al tamaño real del marco.
+function componer() {
   lienzo.width = marco.naturalWidth;
   lienzo.height = marco.naturalHeight;
 
-  ctx.clearRect(
-    0, 0,
-    lienzo.width, lienzo.height
-  );
+  ctx.fillStyle = '#100719';
 
-  ctx.fillStyle = "#100719";
   ctx.fillRect(
     0, 0,
-    lienzo.width, lienzo.height
+    lienzo.width,
+    lienzo.height
   );
 
   zonas[modo].forEach((zona, i) => {
@@ -573,7 +653,6 @@ function crearComposicionFinal() {
     }
   });
 
-  // Marco encima de todas las fotos.
   ctx.drawImage(
     marco,
     0, 0,
@@ -583,107 +662,232 @@ function crearComposicionFinal() {
 }
 
 async function tomarFotos() {
-  if (ocupado || fase !== "camara") return;
+  if (ocupado || fase !== 'camara') return;
 
   ocupado = true;
+  visible('tomar', false);
 
   const actual = sesion;
-  const total = modo === "individual" ? 1 : 4;
-
-  document.getElementById("tomar").disabled = true;
+  const total = modo === 'individual' ? 1 : 4;
 
   try {
     for (let i = 0; i < total; i++) {
       if (actual !== sesion) return;
 
       mensaje.textContent =
-        "Fotografía " + (i + 1) +
-        " de " + total;
+        'Fotografía ' + (i + 1) +
+        ' de ' + total;
 
-      const continuar = await contar(
+      const ok = await contar(
         actual,
-        modo === "cuatro" && i > 0
+        modo === 'cuatro' && i > 0
       );
 
-      if (!continuar) return;
+      if (!ok) return;
 
-      capturas.push(capturarFotograma());
+      capturas.push(capturar());
     }
 
     if (actual !== sesion) return;
 
-    // Ahora sí aparece el marco con las fotos.
-    fase = "foto";
-    crearComposicionFinal();
+    fase = 'resultado';
+
+    componer();
 
     archivoFinal = lienzo.toDataURL(
-      "image/jpeg", 0.92
+      'image/jpeg', .82
     );
 
     detenerCamara();
-    controles("foto");
+
+    visible('controlesFinal', true);
 
     mensaje.textContent =
-      "¡Así quedaron tus fotografías!";
+      '¡Así quedó tu fotografía! ' +
+      'Se mostrará el QR en 8 segundos.';
 
-  } catch (error) {
-    mensaje.textContent = error.message;
-    console.error(error);
+    iniciarGuardado();
+
+    temporizadorQR = setTimeout(() => {
+      if (
+        actual === sesion &&
+        fase === 'resultado'
+      ) {
+        pasarAQR();
+      }
+    }, 8000);
+
+  } catch (err) {
+    console.error(err);
+    mensaje.textContent = err.message;
+    visible('tomar', true);
 
   } finally {
     ocupado = false;
-    document.getElementById("tomar").disabled = false;
   }
 }
 
-function mostrarQR() {
-  if (!archivoFinal) return;
+function iniciarGuardado() {
+  if (
+    !archivoFinal ||
+    guardando ||
+    guardado
+  ) return;
 
-  fase = "qr";
+  if (!APPS_SCRIPT_URL.startsWith(
+    'https://script.google.com/macros/s/'
+  )) {
+    guardado = {
+      ok: false,
+      mensaje:
+        'Falta configurar Google Apps Script.'
+    };
+    return;
+  }
 
-  visible("escenario", false);
-  visible("qrVista", true);
-  controles("qr");
+  guardando = true;
 
-  mensaje.textContent =
-    "Próximamente: QR conectado a Google Drive.";
+  document.getElementById('envioForm').action =
+    APPS_SCRIPT_URL;
+
+  document.getElementById('campoFoto').value =
+    archivoFinal.split(',')[1];
+
+  document.getElementById('envioForm').submit();
 }
 
-function descargar() {
+window.addEventListener('message', ev => {
+  const frame =
+    document.getElementById('envioFrame');
+
+  if (ev.source !== frame.contentWindow) return;
+
+  const data = ev.data;
+
+  if (
+    !data ||
+    data.tipo !== 'NALU35_GUARDADO' ||
+    !data.respuesta
+  ) return;
+
+  if (
+    fase !== 'resultado' &&
+    fase !== 'qr'
+  ) return;
+
+  guardando = false;
+  guardado = data.respuesta;
+
+  document.getElementById('campoFoto').value = '';
+
+  if (fase === 'qr') {
+    actualizarQR();
+  }
+});
+
+function pasarAQR() {
   if (!archivoFinal) return;
 
-  const enlace = document.createElement("a");
+  cancelarTiempo();
 
-  enlace.href = archivoFinal;
-  enlace.download =
-    "NaLu35_" + modo +
-    "_" + Date.now() + ".jpg";
+  fase = 'qr';
 
-  document.body.appendChild(enlace);
-  enlace.click();
-  enlace.remove();
+  visible('escenario', false);
+  visible('controlesFinal', false);
+  visible('qrVista', true);
+
+  mensaje.textContent = '';
+
+  actualizarQR();
+}
+
+function actualizarQR() {
+  const estado =
+    document.getElementById('qrEstado');
+
+  const img =
+    document.getElementById('qrImagen');
+
+  const link =
+    document.getElementById('qrEnlace');
+
+  visible('qrImagen', false);
+  visible('qrEnlace', false);
+  visible('reintentar', false);
+
+  if (
+    guardado &&
+    guardado.ok &&
+    guardado.url
+  ) {
+    estado.textContent =
+      '¡Fotografía guardada! Escanea tu QR.';
+
+    img.src =
+      'https://api.qrserver.com/v1/create-qr-code/' +
+      '?size=350x350&data=' +
+      encodeURIComponent(guardado.url);
+
+    visible('qrImagen', true);
+
+    link.href = guardado.url;
+    link.textContent =
+      'Abrir fotografía en Drive';
+
+    visible('qrEnlace', true);
+
+  } else if (
+    guardado &&
+    !guardado.ok
+  ) {
+    estado.textContent =
+      'No se pudo guardar: ' +
+      guardado.mensaje;
+
+    visible('reintentar', true);
+
+  } else {
+    estado.textContent =
+      'Guardando fotografía, espera un momento...';
+
+    if (!guardando) {
+      iniciarGuardado();
+    }
+  }
+}
+
+function reintentarGuardado() {
+  guardado = null;
+  guardando = false;
+
+  iniciarGuardado();
+  actualizarQR();
 }
 
 function reiniciar() {
-  sesion++;
-  fase = "menu";
+  ++sesion;
+
+  cancelarTiempo();
+  detenerCamara();
+
+  fase = 'menu';
   ocupado = false;
   marco = null;
   capturas = [];
   archivoFinal = null;
+  guardado = null;
+  guardando = false;
 
-  detenerCamara();
+  cuenta.textContent = '';
+  mensaje.textContent = '';
 
-  cuenta.textContent = "";
-  mensaje.textContent = "";
-
-  visible("escenario", false);
-  visible("qrVista", false);
-  visible("menu", true);
-
-  controles("");
+  visible('escenario', false);
+  visible('qrVista', false);
+  visible('controlesFinal', false);
+  visible('tomar', false);
+  visible('menu', true);
 }
-</script>
 
+</script>
 </body>
 </html>
