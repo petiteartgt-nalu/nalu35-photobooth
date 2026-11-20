@@ -253,6 +253,60 @@ button{
   transition:none;
 }
 
+/* Barra de progreso */
+#progresoVista{
+  width:100%;
+  max-width:370px;
+  margin:auto;
+  padding:25px 20px;
+  border:2px solid #ff36b9;
+  border-radius:18px;
+  background:#24102f;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:15px;
+}
+
+#progresoVista h2{
+  margin:0;
+  font-size:21px;
+  color:#ff61ce;
+}
+
+#progresoTexto{
+  font-size:13px;
+  color:#8ceaf4;
+}
+
+#progresoNumero{
+  font-size:25px;
+  color:#ff61ce;
+}
+
+.barraExterior{
+  width:100%;
+  height:18px;
+  background:#483452;
+  border-radius:30px;
+  overflow:hidden;
+  border:1px solid #80558c;
+}
+
+#barraInterior{
+  width:0%;
+  height:100%;
+  border-radius:30px;
+  background:linear-gradient(
+    90deg,
+    #a82cff,
+    #ff36b9,
+    #ff82e3
+  );
+  box-shadow:0 0 12px #ff36b9;
+  transition:width .3s ease;
+}
+
 @media(max-height:650px){
   #logoInicio{
     width:min(39vw,135px);
@@ -281,7 +335,7 @@ button{
 <section id="menu">
   <img
     id="logoInicio"
-    src="./logo-nalu35.png?v=36"
+    src="./logo-nalu35.png?v=37"
     alt="NaLu's 35"
   >
 
@@ -328,6 +382,24 @@ button{
     class="oculto"
     alt="GIF animado"
   >
+</section>
+
+<section id="progresoVista" class="oculto">
+  <h2>¡Guardando tu recuerdo!</h2>
+
+  <div id="progresoTexto">
+    Preparando archivo...
+  </div>
+
+  <div class="barraExterior">
+    <div id="barraInterior"></div>
+  </div>
+
+  <div id="progresoNumero">0%</div>
+
+  <p style="font-size:12px;color:#bba9ca">
+    ¡Un momento, estamos preparando tu fotografía!
+  </p>
 </section>
 
 <section id="qrVista" class="oculto">
@@ -442,6 +514,33 @@ function esperar(ms){
   return new Promise(resolve=>setTimeout(resolve,ms));
 }
 
+function actualizarProgreso(porcentaje,texto){
+  const valor=Math.max(
+    0,
+    Math.min(100,Math.round(porcentaje))
+  );
+
+  document.getElementById('barraInterior')
+    .style.width=valor+'%';
+
+  document.getElementById('progresoNumero')
+    .textContent=valor+'%';
+
+  if(texto){
+    document.getElementById('progresoTexto')
+      .textContent=texto;
+  }
+}
+
+function mostrarProgreso(){
+  visible('menu',false);
+  visible('escenario',false);
+  visible('gifVista',false);
+  visible('qrVista',false);
+  visible('progresoVista',true);
+  mensaje.textContent='';
+}
+
 async function mostrarFlash(actual){
   if(actual!==sesion)return;
 
@@ -464,7 +563,7 @@ function cargarMarco(ruta){
       reject(new Error('No se encontró '+ruta));
     };
 
-    img.src=ruta+'?v=36';
+    img.src=ruta+'?v=37';
   });
 }
 
@@ -520,9 +619,12 @@ async function elegir(tipo){
   fase='cargando';
   cuenta.textContent='';
 
+  actualizarProgreso(0,'Preparando archivo...');
+
   visible('menu',false);
   visible('qrVista',false);
   visible('gifVista',false);
+  visible('progresoVista',false);
   visible('escenario',true);
   visible('tomar',false);
 
@@ -796,7 +898,6 @@ async function tomarFotos(){
 
     componer();
 
-    // JPG AL 70 %
     archivoFinal=lienzo.toDataURL(
       'image/jpeg',
       0.70
@@ -814,7 +915,8 @@ async function tomarFotos(){
         actual===sesion &&
         fase==='resultado'
       ){
-        pasarAQR();
+        mostrarProgreso();
+        fase='guardando';
       }
     },5000);
 
@@ -859,13 +961,6 @@ async function obtenerWorkerGIF(){
   );
 }
 
-/*
-  GIF OPTIMIZADO:
-  - 6 fotografías
-  - 6 cuadros procesados
-  - Reproducción continua
-  - No se duplican cuadros
-*/
 async function crearGIF(actual){
   const estado=document.getElementById('gifEstado');
 
@@ -885,7 +980,8 @@ async function crearGIF(actual){
 
     if(actual!==sesion)return;
 
-    const ancho=480;
+    // GIF MÁS LIVIANO: 320 PX
+    const ancho=320;
 
     const alto=Math.round(
       ancho *
@@ -895,13 +991,10 @@ async function crearGIF(actual){
 
     const gif=new GIF({
       workers:2,
-      quality:12,
+      quality:16,
       width:ancho,
       height:alto,
-
-      // 0 significa repetición continua.
       repeat:0,
-
       workerScript:workerURL,
       background:'#100719'
     });
@@ -910,7 +1003,6 @@ async function crearGIF(actual){
 
     const z=zonas.individual[0];
 
-    // SOLO 6 CUADROS, SIN TRES VUELTAS DUPLICADAS
     for(let i=0;i<6;i++){
       if(actual!==sesion)return;
 
@@ -988,8 +1080,7 @@ async function crearGIF(actual){
 
     visible('gifImagen',true);
 
-    estado.textContent=
-      '¡Tu GIF está listo!';
+    estado.textContent='¡Tu GIF está listo!';
 
     fase='resultado-gif';
 
@@ -1006,7 +1097,8 @@ async function crearGIF(actual){
         actual===sesion &&
         fase==='resultado-gif'
       ){
-        pasarAQR();
+        mostrarProgreso();
+        fase='guardando';
       }
     },5000);
 
@@ -1046,10 +1138,6 @@ function generarToken(){
   ).join('');
 }
 
-/*
-  SISTEMA DE GUARDADO POR PARTES.
-  SE CONSERVA PARA EVITAR ARCHIVOS INCOMPLETOS.
-*/
 const CHUNK_CHARS=160000;
 
 function enviarFormulario(
@@ -1169,6 +1257,8 @@ async function iniciarGuardado(actual){
     base64.length/CHUNK_CHARS
   );
 
+  actualizarProgreso(0,'Guardando tu recuerdo...');
+
   try{
     if(total>80){
       throw new Error(
@@ -1184,15 +1274,6 @@ async function iniciarGuardado(actual){
         (i+1)*CHUNK_CHARS
       );
 
-      mensaje.textContent=
-        'Guardando '+(i+1)+
-        ' de '+total+' partes...';
-
-      if(fase==='qr'){
-        document.getElementById('qrEstado')
-          .textContent=mensaje.textContent;
-      }
-
       enviarFormulario(
         'chunk',
         token,
@@ -1205,12 +1286,22 @@ async function iniciarGuardado(actual){
       await consultarRespuesta(
         token,i,actual
       );
+
+      if(actual!==sesion)return;
+
+      // Hasta 95% durante el envío.
+      actualizarProgreso(
+        ((i+1)/total)*95,
+        'Guardando tu recuerdo...'
+      );
     }
 
     if(actual!==sesion)return;
 
-    mensaje.textContent=
-      'Verificando archivo completo...';
+    actualizarProgreso(
+      97,
+      'Verificando tu archivo...'
+    );
 
     enviarFormulario(
       'finish',
@@ -1229,12 +1320,23 @@ async function iniciarGuardado(actual){
 
     guardado=result;
 
-    if(fase==='qr'){
-      actualizarQR();
-    }else{
-      mensaje.textContent=
-        '¡Archivo guardado correctamente!';
+    actualizarProgreso(
+      100,
+      '¡Archivo guardado correctamente!'
+    );
+
+    clearTimeout(temporizadorQR);
+
+    if(fase==='resultado'||fase==='resultado-gif'){
+      mostrarProgreso();
+      fase='guardando';
     }
+
+    setTimeout(()=>{
+      if(actual===sesion){
+        pasarAQR();
+      }
+    },500);
 
   }catch(e){
     if(actual!==sesion)return;
@@ -1244,12 +1346,15 @@ async function iniciarGuardado(actual){
       mensaje:e.message
     };
 
-    if(fase==='qr'){
-      actualizarQR();
-    }else{
-      mensaje.textContent=
-        'Error al guardar: '+e.message;
-    }
+    clearTimeout(temporizadorQR);
+
+    mostrarProgreso();
+    fase='error';
+
+    actualizarProgreso(
+      0,
+      'No se pudo guardar: '+e.message
+    );
 
     console.error(e);
   }
@@ -1264,6 +1369,7 @@ function pasarAQR(){
 
   visible('escenario',false);
   visible('gifVista',false);
+  visible('progresoVista',false);
   visible('qrVista',true);
 
   document.getElementById('qrTitulo')
@@ -1285,7 +1391,6 @@ function pasarAQR(){
 
 function actualizarQR(){
   const estado=document.getElementById('qrEstado');
-
   const img=document.getElementById('qrImagen');
 
   visible('qrImagen',false);
@@ -1344,9 +1449,12 @@ function reiniciar(){
   cuenta.textContent='';
   mensaje.textContent='';
 
+  actualizarProgreso(0,'Preparando archivo...');
+
   visible('escenario',false);
   visible('qrVista',false);
   visible('gifVista',false);
+  visible('progresoVista',false);
   visible('tomar',false);
   visible('menu',true);
 }
