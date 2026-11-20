@@ -111,7 +111,7 @@ h1 {
   font-size: 12px;
 }
 
-button, .botonDescarga {
+button {
   font-family: Righteous, cursive;
   background: #38174b;
   color: white;
@@ -186,12 +186,6 @@ button, .botonDescarga {
   height: 1px;
   opacity: 0;
   pointer-events: none;
-}
-
-#qrEnlace {
-  color: #8ceaf4;
-  font-size: 12px;
-  overflow-wrap: anywhere;
 }
 
 #gifVista {
@@ -270,9 +264,6 @@ button, .botonDescarga {
     <h2 id="qrTitulo">¡Tu foto está lista!</h2>
     <div id="qrEstado">Preparando QR...</div>
     <img id="qrImagen" class="oculto" alt="Código QR">
-    <a id="qrEnlace" class="oculto" target="_blank" rel="noopener">
-      Abrir archivo
-    </a>
     <p id="qrInstruccion">
       Escanea el QR para abrir y descargar tu fotografía.
     </p>
@@ -349,7 +340,7 @@ function cargarMarco(ruta) {
     const img = new Image();
     img.onload = () => ok(img);
     img.onerror = () => fail(new Error('No se encontró ' + ruta));
-    img.src = ruta + '?v=22';
+    img.src = ruta + '?v=23';
   });
 }
 
@@ -681,7 +672,6 @@ async function crearGIF(actual) {
     gifEnProceso = gif;
     const zona = zonas.individual[0];
 
-    // 6 fotos, 1 segundo por foto, 3 vueltas.
     for (let vuelta = 0; vuelta < 3; vuelta++) {
       for (let i = 0; i < 6; i++) {
         if (actual !== sesion) return;
@@ -744,8 +734,6 @@ async function crearGIF(actual) {
     estado.textContent = '¡Tu GIF está listo!';
     fase = 'resultado-gif';
 
-    // Convertimos el GIF a base64 para enviarlo
-    // al mismo Apps Script que guarda las fotos.
     archivoFinal = await blobADataURL(blob);
 
     if (actual !== sesion) return;
@@ -753,7 +741,6 @@ async function crearGIF(actual) {
     tipoArchivo = 'gif';
     iniciarGuardado();
 
-    // Muestra el GIF 5 segundos antes del QR.
     temporizadorQR = setTimeout(() => {
       if (
         actual === sesion &&
@@ -886,10 +873,8 @@ function pasarAQR() {
 function actualizarQR() {
   const estado = document.getElementById('qrEstado');
   const img = document.getElementById('qrImagen');
-  const link = document.getElementById('qrEnlace');
 
   visible('qrImagen', false);
-  visible('qrEnlace', false);
 
   if (guardado && guardado.ok && guardado.url) {
     estado.textContent =
@@ -903,12 +888,6 @@ function actualizarQR() {
       encodeURIComponent(guardado.url);
 
     visible('qrImagen', true);
-    link.href = guardado.url;
-    link.textContent =
-      tipoArchivo === 'gif'
-        ? 'Abrir GIF en Drive'
-        : 'Abrir fotografía en Drive';
-    visible('qrEnlace', true);
 
   } else if (guardado && !guardado.ok) {
     estado.textContent =
