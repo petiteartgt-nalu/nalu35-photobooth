@@ -347,7 +347,7 @@ function cargarMarco(ruta) {
     const img = new Image();
     img.onload = () => ok(img);
     img.onerror = () => fail(new Error('No se encontró ' + ruta));
-    img.src = ruta + '?v=18';
+    img.src = ruta + '?v=21';
   });
 }
 
@@ -411,7 +411,11 @@ async function elegir(tipo) {
 
   try {
     const nuevoMarco = await cargarMarco(
-      tipo === 'cuatro' ? 'marco-cuatro.png' : 'marco-individual.png'
+      tipo === 'cuatro'
+        ? 'marco-cuatro.png'
+        : tipo === 'gif'
+          ? 'marco-gif.png'
+          : 'marco-individual.png'
     );
 
     if (actual !== sesion) return;
@@ -675,10 +679,9 @@ async function crearGIF(actual) {
     const zona = zonas.individual[0];
 
     /*
-      6 fotografías originales.
-      Cada una aparece 1 segundo.
-      Repetimos la secuencia 3 veces.
-      Total: 18 segundos por ciclo.
+      Seis fotografías originales.
+      Un segundo por fotografía.
+      Tres vueltas de la misma secuencia.
     */
     for (let vuelta = 0; vuelta < 3; vuelta++) {
       for (let i = 0; i < 6; i++) {
