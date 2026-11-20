@@ -398,7 +398,7 @@ button{
   <div id="progresoNumero">0%</div>
 
   <p style="font-size:12px;color:#bba9ca">
-    ¡Un momento, estamos preparando tu fotografía!
+    ¡Tu recuerdo está casi listo!
   </p>
 </section>
 
@@ -980,7 +980,6 @@ async function crearGIF(actual){
 
     if(actual!==sesion)return;
 
-    // GIF MÁS LIVIANO: 320 PX
     const ancho=320;
 
     const alto=Math.round(
@@ -1289,7 +1288,6 @@ async function iniciarGuardado(actual){
 
       if(actual!==sesion)return;
 
-      // Hasta 95% durante el envío.
       actualizarProgreso(
         ((i+1)/total)*95,
         'Guardando tu recuerdo...'
