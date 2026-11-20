@@ -3,9 +3,13 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#100719">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NaLu 35">
 
-<title>NaLu's 35 Photobooth</title>
+<title>NaLu's 35</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
 
@@ -94,10 +98,11 @@ h1 {
   color: white;
   text-shadow: 0 0 12px #ff00c8, 0 0 30px #ff00c8;
   max-width: 100%;
+  padding: 0 8px;
 }
 
 #cuenta.pose {
-  font-size: clamp(32px, 8vw, 58px);
+  font-size: clamp(26px, 7vw, 48px);
 }
 
 #mensaje {
@@ -199,10 +204,7 @@ button {
 <div class="app">
 
   <h1>NaLu's 35</h1>
-
-  <p class="sub">
-    PHOTOBOOTH · 18.12.2026
-  </p>
+  <p class="sub">18.12.2026</p>
 
   <section id="menu">
     <h2>Elige tu fotografía</h2>
@@ -295,7 +297,6 @@ button {
 </form>
 
 <script>
-
 const APPS_SCRIPT_URL =
   'https://script.google.com/macros/s/AKfycbyYM2_azshTL_-Y4Ad3QPzl33j-Mpy7lX_AfWSnv8OH0sN_9CkIse1ARFfgTFL9o_aJ7Q/exec';
 
@@ -350,7 +351,7 @@ function cargarMarco(ruta) {
     img.onerror = () =>
       fail(new Error('No se encontró ' + ruta));
 
-    img.src = ruta + '?v=13';
+    img.src = ruta + '?v=15';
   });
 }
 
@@ -399,7 +400,7 @@ async function elegir(tipo) {
   mensaje.textContent = 'Preparando cámara...';
 
   try {
-    marco = await cargarMarco(
+    const nuevoMarco = await cargarMarco(
       tipo === 'individual'
         ? 'marco-individual.png'
         : 'marco-cuatro.png'
@@ -407,12 +408,21 @@ async function elegir(tipo) {
 
     if (actual !== sesion) return;
 
+    marco = nuevoMarco;
+
     if (tipo === 'individual') {
       lienzo.width = marco.naturalWidth;
       lienzo.height = marco.naturalHeight;
     } else {
-      lienzo.width = 1280;
-      lienzo.height = 960;
+      const zona = zonas.cuatro[0];
+
+      lienzo.width = Math.round(
+        marco.naturalWidth * zona[2]
+      );
+
+      lienzo.height = Math.round(
+        marco.naturalHeight * zona[3]
+      );
     }
 
     const stream =
@@ -444,7 +454,7 @@ async function elegir(tipo) {
     mensaje.textContent =
       tipo === 'individual'
         ? '¡Ubícate dentro del marco!'
-        : '¡Prepárate para tus cuatro poses!';
+        : '¡Ubícate dentro del encuadre!';
 
   } catch (err) {
     mensaje.textContent =
@@ -547,19 +557,19 @@ function animar() {
 requestAnimationFrame(animar);
 
 async function contar(actual, cambio) {
-  if (cambio) {
-    cuenta.classList.add('pose');
+  cuenta.classList.add('pose');
 
-    cuenta.textContent = '¡CAMBIA DE POSE!';
+  cuenta.textContent = cambio
+    ? '¡CAMBIA DE POSE!'
+    : '¡PREPÁRATE!';
 
-    await esperar(1000);
+  await esperar(1000);
 
-    if (actual !== sesion) return false;
-  }
+  if (actual !== sesion) return false;
 
   cuenta.classList.remove('pose');
 
-  for (let n = 5; n >= 1; n--) {
+  for (let n = 3; n >= 1; n--) {
     if (actual !== sesion) return false;
 
     cuenta.textContent = n;
@@ -672,7 +682,7 @@ async function tomarFotos() {
       ) {
         pasarAQR();
       }
-    }, 8000);
+    }, 5000);
 
   } catch (err) {
     console.error(err);
@@ -732,9 +742,7 @@ function consultarGuardado() {
   consultas++;
 
   const tokenConsultado = tokenActual;
-  const callback =
-    'naluRespuesta_' + consultas;
-
+  const callback = 'naluRespuesta_' + consultas;
   const script = document.createElement('script');
 
   let respondio = false;
@@ -749,8 +757,10 @@ function consultarGuardado() {
     if (tokenConsultado !== tokenActual) return;
 
     if (resultado.pendiente) {
-      temporizadorConsulta =
-        setTimeout(consultarGuardado, 1000);
+      temporizadorConsulta = setTimeout(
+        consultarGuardado,
+        1000
+      );
     } else {
       guardado = resultado;
 
@@ -769,8 +779,10 @@ function consultarGuardado() {
 
     if (tokenConsultado !== tokenActual) return;
 
-    temporizadorConsulta =
-      setTimeout(consultarGuardado, 1500);
+    temporizadorConsulta = setTimeout(
+      consultarGuardado,
+      1500
+    );
   };
 
   script.src =
@@ -869,7 +881,6 @@ function reiniciar() {
   visible('tomar', false);
   visible('menu', true);
 }
-
 </script>
 </body>
 </html>
