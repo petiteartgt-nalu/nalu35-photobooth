@@ -236,7 +236,7 @@ button {
     <h2>¡Tu foto está lista!</h2>
 
     <div id="qrEstado">
-      Guardando fotografía...
+      Preparando QR...
     </div>
 
     <img
@@ -257,14 +257,6 @@ button {
     <p>
       Escanea el QR para abrir y descargar tu fotografía.
     </p>
-
-    <button
-      id="reintentar"
-      class="oculto"
-      onclick="reintentarGuardado()"
-    >
-      Reintentar guardado
-    </button>
 
     <button
       class="principal"
@@ -299,6 +291,7 @@ button {
   style="display:none"
 >
   <input name="foto" id="campoFoto">
+  <input name="token" id="campoToken">
 </form>
 
 <script>
@@ -311,7 +304,6 @@ const lienzo = document.getElementById('lienzo');
 const ctx = lienzo.getContext('2d');
 const mensaje = document.getElementById('mensaje');
 const cuenta = document.getElementById('cuenta');
-const tomar = document.getElementById('tomar');
 
 const zonas = {
   individual: [
@@ -333,10 +325,12 @@ let fase = 'menu';
 let sesion = 0;
 let ocupado = false;
 let archivoFinal = null;
+let tokenActual = null;
 let guardado = null;
-let guardando = false;
 let temporizadorQR = null;
-let temporizadorGuardado = null;
+let temporizadorConsulta = null;
+let consultas = 0;
+let envioRealizado = false;
 
 function visible(id, si) {
   document.getElementById(id)
@@ -356,7 +350,7 @@ function cargarMarco(ruta) {
     img.onerror = () =>
       fail(new Error('No se encontró ' + ruta));
 
-    img.src = ruta + '?v=12';
+    img.src = ruta + '?v=13';
   });
 }
 
@@ -372,10 +366,10 @@ function detenerCamara() {
 
 function cancelarTiempo() {
   clearTimeout(temporizadorQR);
-  clearTimeout(temporizadorGuardado);
+  clearTimeout(temporizadorConsulta);
 
   temporizadorQR = null;
-  temporizadorGuardado = null;
+  temporizadorConsulta = null;
 }
 
 async function elegir(tipo) {
@@ -388,8 +382,10 @@ async function elegir(tipo) {
   marco = null;
   capturas = [];
   archivoFinal = null;
+  tokenActual = null;
   guardado = null;
-  guardando = false;
+  envioRealizado = false;
+  consultas = 0;
   ocupado = false;
   fase = 'cargando';
 
@@ -403,15 +399,13 @@ async function elegir(tipo) {
   mensaje.textContent = 'Preparando cámara...';
 
   try {
-    const nuevoMarco = await cargarMarco(
+    marco = await cargarMarco(
       tipo === 'individual'
         ? 'marco-individual.png'
         : 'marco-cuatro.png'
     );
 
     if (actual !== sesion) return;
-
-    marco = nuevoMarco;
 
     if (tipo === 'individual') {
       lienzo.width = marco.naturalWidth;
@@ -514,7 +508,8 @@ function dibujarCamara() {
 
   ctx.fillRect(
     0, 0,
-    lienzo.width, lienzo.height
+    lienzo.width,
+    lienzo.height
   );
 
   if (modo === 'individual') {
@@ -689,10 +684,22 @@ async function tomarFotos() {
   }
 }
 
-function iniciarGuardado() {
-  if (!archivoFinal || guardando || guardado) return;
+function generarToken() {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
 
-  guardando = true;
+  return Array.from(
+    bytes,
+    b => b.toString(16).padStart(2, '0')
+  ).join('');
+}
+
+function iniciarGuardado() {
+  if (!archivoFinal || envioRealizado) return;
+
+  envioRealizado = true;
+  tokenActual = generarToken();
+  consultas = 0;
 
   document.getElementById('envioForm').action =
     APPS_SCRIPT_URL;
@@ -700,60 +707,80 @@ function iniciarGuardado() {
   document.getElementById('campoFoto').value =
     archivoFinal.split(',')[1];
 
+  document.getElementById('campoToken').value =
+    tokenActual;
+
   document.getElementById('envioForm').submit();
 
-  temporizadorGuardado = setTimeout(() => {
-    if (guardando) {
-      guardando = false;
+  consultarGuardado();
+}
 
-      guardado = {
-        ok: false,
-        mensaje:
-          'No se recibió confirmación del servidor.'
-      };
+function consultarGuardado() {
+  if (!tokenActual || guardado) return;
+
+  if (consultas >= 30) {
+    guardado = {
+      ok: false,
+      mensaje:
+        'No se pudo confirmar el guardado. Revisa Google Drive.'
+    };
+
+    if (fase === 'qr') actualizarQR();
+    return;
+  }
+
+  consultas++;
+
+  const tokenConsultado = tokenActual;
+  const callback =
+    'naluRespuesta_' + consultas;
+
+  const script = document.createElement('script');
+
+  let respondio = false;
+
+  window[callback] = function(resultado) {
+    if (respondio) return;
+    respondio = true;
+
+    script.remove();
+    delete window[callback];
+
+    if (tokenConsultado !== tokenActual) return;
+
+    if (resultado.pendiente) {
+      temporizadorConsulta =
+        setTimeout(consultarGuardado, 1000);
+    } else {
+      guardado = resultado;
+
+      document.getElementById('campoFoto').value = '';
 
       if (fase === 'qr') actualizarQR();
     }
-  }, 25000);
+  };
+
+  script.onerror = function() {
+    if (respondio) return;
+    respondio = true;
+
+    script.remove();
+    delete window[callback];
+
+    if (tokenConsultado !== tokenActual) return;
+
+    temporizadorConsulta =
+      setTimeout(consultarGuardado, 1500);
+  };
+
+  script.src =
+    APPS_SCRIPT_URL +
+    '?token=' + encodeURIComponent(tokenConsultado) +
+    '&callback=' + encodeURIComponent(callback) +
+    '&t=' + Date.now();
+
+  document.head.appendChild(script);
 }
-
-window.addEventListener('message', ev => {
-  const frame =
-    document.getElementById('envioFrame');
-
-  if (ev.source !== frame.contentWindow) return;
-
-  const origenValido =
-    ev.origin === 'https://script.google.com' ||
-    ev.origin === 'https://script.googleusercontent.com' ||
-    ev.origin.endsWith('.googleusercontent.com');
-
-  if (!origenValido) return;
-
-  const data = ev.data;
-
-  if (
-    !data ||
-    data.tipo !== 'NALU35_GUARDADO' ||
-    !data.respuesta
-  ) return;
-
-  if (
-    fase !== 'resultado' &&
-    fase !== 'qr'
-  ) return;
-
-  clearTimeout(temporizadorGuardado);
-
-  guardando = false;
-  guardado = data.respuesta;
-
-  document.getElementById('campoFoto').value = '';
-
-  if (fase === 'qr') {
-    actualizarQR();
-  }
-});
 
 function pasarAQR() {
   if (!archivoFinal) return;
@@ -782,7 +809,6 @@ function actualizarQR() {
 
   visible('qrImagen', false);
   visible('qrEnlace', false);
-  visible('reintentar', false);
 
   if (
     guardado &&
@@ -810,23 +836,13 @@ function actualizarQR() {
     !guardado.ok
   ) {
     estado.textContent =
-      'No se pudo guardar: ' +
+      'No se pudo confirmar la fotografía: ' +
       guardado.mensaje;
-
-    visible('reintentar', true);
 
   } else {
     estado.textContent =
-      'Guardando fotografía, espera un momento...';
+      'Preparando tu código QR...';
   }
-}
-
-function reintentarGuardado() {
-  guardado = null;
-  guardando = false;
-
-  iniciarGuardado();
-  actualizarQR();
 }
 
 function reiniciar() {
@@ -840,8 +856,10 @@ function reiniciar() {
   marco = null;
   capturas = [];
   archivoFinal = null;
+  tokenActual = null;
   guardado = null;
-  guardando = false;
+  envioRealizado = false;
+  consultas = 0;
 
   cuenta.textContent = '';
   mensaje.textContent = '';
