@@ -1,16 +1,13 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>NaLu's 35 Photobooth</title>
 
-<link
-  href="https://fonts.googleapis.com/css2?family=Righteous&display=swap"
-  rel="stylesheet"
->
+<link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
 
 <style>
 * {
@@ -84,25 +81,19 @@ h1 {
 
 #tomar {
   pointer-events: auto;
-  box-shadow:
-    0 0 15px #ff35bd,
-    0 0 32px #ff35bd;
-  border: 2px solid #fff;
+  background: #ff36b9;
+  color: #190721;
+  box-shadow: 0 0 15px #ff35bd, 0 0 32px #ff35bd;
+  border: 2px solid white;
   font-size: 20px;
   padding: 17px 25px;
 }
 
 #cuenta {
   font-size: clamp(72px, 18vw, 110px);
-  line-height: 1.05;
-  color: #fff;
-  text-shadow:
-    0 0 12px #ff00c8,
-    0 0 30px #ff00c8,
-    0 0 50px #ff00c8;
-  padding: 12px;
+  color: white;
+  text-shadow: 0 0 12px #ff00c8, 0 0 30px #ff00c8;
   max-width: 100%;
-  overflow-wrap: break-word;
 }
 
 #cuenta.pose {
@@ -125,10 +116,6 @@ button {
   padding: 11px 18px;
   font-size: 14px;
   cursor: pointer;
-}
-
-button:disabled {
-  opacity: .55;
 }
 
 .principal {
@@ -197,14 +184,6 @@ button:disabled {
   height: 1px;
   opacity: 0;
   pointer-events: none;
-}
-
-#controlesFinal {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  flex-wrap: wrap;
-  padding-bottom: 5px;
 }
 
 #qrEnlace {
@@ -276,8 +255,7 @@ button:disabled {
     </a>
 
     <p>
-      Escanea el QR para abrir y descargar
-      tu fotografía.
+      Escanea el QR para abrir y descargar tu fotografía.
     </p>
 
     <button
@@ -297,19 +275,6 @@ button:disabled {
   </section>
 
   <p id="mensaje"></p>
-
-  <div id="controlesFinal" class="oculto">
-    <button onclick="reiniciar()">
-      Repetir
-    </button>
-
-    <button
-      onclick="pasarAQR()"
-      class="principal"
-    >
-      Ver QR ahora
-    </button>
-  </div>
 
   <video
     id="video"
@@ -371,6 +336,7 @@ let archivoFinal = null;
 let guardado = null;
 let guardando = false;
 let temporizadorQR = null;
+let temporizadorGuardado = null;
 
 function visible(id, si) {
   document.getElementById(id)
@@ -390,7 +356,7 @@ function cargarMarco(ruta) {
     img.onerror = () =>
       fail(new Error('No se encontró ' + ruta));
 
-    img.src = ruta + '?v=11';
+    img.src = ruta + '?v=12';
   });
 }
 
@@ -405,10 +371,11 @@ function detenerCamara() {
 }
 
 function cancelarTiempo() {
-  if (temporizadorQR) {
-    clearTimeout(temporizadorQR);
-    temporizadorQR = null;
-  }
+  clearTimeout(temporizadorQR);
+  clearTimeout(temporizadorGuardado);
+
+  temporizadorQR = null;
+  temporizadorGuardado = null;
 }
 
 async function elegir(tipo) {
@@ -431,7 +398,6 @@ async function elegir(tipo) {
   visible('menu', false);
   visible('qrVista', false);
   visible('escenario', true);
-  visible('controlesFinal', false);
   visible('tomar', false);
 
   mensaje.textContent = 'Preparando cámara...';
@@ -492,7 +458,6 @@ async function elegir(tipo) {
       err.message;
 
     console.error(err);
-    visible('tomar', false);
   }
 }
 
@@ -700,11 +665,8 @@ async function tomarFotos() {
 
     detenerCamara();
 
-    visible('controlesFinal', true);
-
     mensaje.textContent =
-      '¡Así quedó tu fotografía! ' +
-      'Se mostrará el QR en 8 segundos.';
+      '¡Así quedó tu fotografía!';
 
     iniciarGuardado();
 
@@ -728,22 +690,7 @@ async function tomarFotos() {
 }
 
 function iniciarGuardado() {
-  if (
-    !archivoFinal ||
-    guardando ||
-    guardado
-  ) return;
-
-  if (!APPS_SCRIPT_URL.startsWith(
-    'https://script.google.com/macros/s/'
-  )) {
-    guardado = {
-      ok: false,
-      mensaje:
-        'Falta configurar Google Apps Script.'
-    };
-    return;
-  }
+  if (!archivoFinal || guardando || guardado) return;
 
   guardando = true;
 
@@ -754,6 +701,20 @@ function iniciarGuardado() {
     archivoFinal.split(',')[1];
 
   document.getElementById('envioForm').submit();
+
+  temporizadorGuardado = setTimeout(() => {
+    if (guardando) {
+      guardando = false;
+
+      guardado = {
+        ok: false,
+        mensaje:
+          'No se recibió confirmación del servidor.'
+      };
+
+      if (fase === 'qr') actualizarQR();
+    }
+  }, 25000);
 }
 
 window.addEventListener('message', ev => {
@@ -761,6 +722,13 @@ window.addEventListener('message', ev => {
     document.getElementById('envioFrame');
 
   if (ev.source !== frame.contentWindow) return;
+
+  const origenValido =
+    ev.origin === 'https://script.google.com' ||
+    ev.origin === 'https://script.googleusercontent.com' ||
+    ev.origin.endsWith('.googleusercontent.com');
+
+  if (!origenValido) return;
 
   const data = ev.data;
 
@@ -775,6 +743,8 @@ window.addEventListener('message', ev => {
     fase !== 'qr'
   ) return;
 
+  clearTimeout(temporizadorGuardado);
+
   guardando = false;
   guardado = data.respuesta;
 
@@ -788,12 +758,11 @@ window.addEventListener('message', ev => {
 function pasarAQR() {
   if (!archivoFinal) return;
 
-  cancelarTiempo();
+  clearTimeout(temporizadorQR);
 
   fase = 'qr';
 
   visible('escenario', false);
-  visible('controlesFinal', false);
   visible('qrVista', true);
 
   mensaje.textContent = '';
@@ -849,10 +818,6 @@ function actualizarQR() {
   } else {
     estado.textContent =
       'Guardando fotografía, espera un momento...';
-
-    if (!guardando) {
-      iniciarGuardado();
-    }
   }
 }
 
@@ -883,7 +848,6 @@ function reiniciar() {
 
   visible('escenario', false);
   visible('qrVista', false);
-  visible('controlesFinal', false);
   visible('tomar', false);
   visible('menu', true);
 }
