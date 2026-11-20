@@ -7,17 +7,22 @@
 <title>NaLu's 35 Photobooth</title>
 
 <style>
-* { box-sizing: border-box; }
+@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
   background: #100719;
   color: white;
-  font-family: Arial, sans-serif;
+  font-family: 'Righteous', cursive;
   text-align: center;
 }
 
 .app {
+  height: 100vh;
   height: 100dvh;
   max-width: 520px;
   margin: auto;
@@ -30,15 +35,16 @@ body {
 
 h1 {
   color: #ff38be;
-  font-size: 24px;
+  font-size: 25px;
   margin: 5px 0 2px;
-  text-shadow: 0 0 12px #f09;
+  text-shadow: 0 0 12px #ff0099;
 }
 
 .subtitulo {
   font-size: 11px;
   color: #76edfa;
   margin: 0 0 7px;
+  letter-spacing: 2px;
 }
 
 #escenario {
@@ -67,10 +73,17 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-family: 'Righteous', cursive;
   font-size: 95px;
   font-weight: bold;
   color: white;
-  text-shadow: 0 0 20px #ff00c8;
+  text-shadow:
+    0 0 12px #ff00c8,
+    0 0 28px #ff00c8,
+    0 0 45px #ff00c8;
+  text-align: center;
+  padding: 12px;
+  line-height: 1.1;
   pointer-events: none;
 }
 
@@ -88,24 +101,29 @@ h1 {
 }
 
 button {
+  font-family: 'Righteous', cursive;
   border: 1px solid #ff4bc9;
   border-radius: 20px;
   background: #3b174e;
   color: white;
-  font-weight: bold;
+  font-size: 14px;
   padding: 11px 17px;
   margin: 3px;
   cursor: pointer;
 }
 
-button:disabled { opacity: .45; }
+button:disabled {
+  opacity: .45;
+}
 
 .principal {
   background: #ff36b9;
   color: #16051b;
 }
 
-.oculto { display: none !important; }
+.oculto {
+  display: none !important;
+}
 
 #menu, #qrVista {
   width: 100%;
@@ -150,14 +168,19 @@ button:disabled { opacity: .45; }
 <body>
 
 <div class="app">
+
   <h1>NaLu's 35</h1>
-  <p class="subtitulo">PHOTOBOOTH · 18.12.2026</p>
+  <p class="subtitulo">
+    PHOTOBOOTH · 18.12.2026
+  </p>
 
   <section id="menu">
     <h2>Elige tu fotografía</h2>
+
     <button onclick="elegir('individual')">
       1 FOTOGRAFÍA
     </button>
+
     <button onclick="elegir('cuatro')">
       4 FOTOGRAFÍAS
     </button>
@@ -170,11 +193,14 @@ button:disabled { opacity: .45; }
 
   <section id="qrVista" class="oculto">
     <h2>¡Tu fotografía está lista!</h2>
+
     <div id="qrIcono">▦</div>
+
     <p>
       Aquí aparecerá el código QR para descargar
       tu fotografía cuando activemos Google Drive.
     </p>
+
     <button onclick="descargar()" class="principal">
       Descargar fotografía
     </button>
@@ -183,19 +209,27 @@ button:disabled { opacity: .45; }
   <p id="mensaje"></p>
 
   <div class="controles">
+
     <div id="controlesCamara" class="oculto">
-      <button id="tomar" class="principal"
+      <button id="tomar"
+              class="principal"
               onclick="tomarFotos()">
         TOMAR FOTO
       </button>
-      <button onclick="reiniciar()">Volver</button>
+
+      <button onclick="reiniciar()">
+        Volver
+      </button>
     </div>
 
     <div id="controlesFoto" class="oculto">
       <button onclick="mostrarQR()" class="principal">
         Siguiente ›
       </button>
-      <button onclick="reiniciar()">Repetir</button>
+
+      <button onclick="reiniciar()">
+        Repetir
+      </button>
     </div>
 
     <div id="controlesQR" class="oculto">
@@ -203,9 +237,11 @@ button:disabled { opacity: .45; }
         Nueva fotografía
       </button>
     </div>
+
   </div>
 
   <video id="video" autoplay muted playsinline></video>
+
 </div>
 
 <script>
@@ -224,8 +260,8 @@ let ocupado = false;
 let sesion = 0;
 let archivoFinal = null;
 
-// Posiciones relativas a cada marco.
-// Se pueden ajustar si fuera necesario.
+// Ubicación aproximada de los espacios
+// transparentes dentro de los marcos.
 const zonas = {
   individual: [
     [.085, .18, .83, .64]
@@ -252,11 +288,14 @@ function controles(nombre) {
 function cargarMarco(ruta) {
   return new Promise((resolve, reject) => {
     const img = new Image();
+
     img.onload = () => resolve(img);
+
     img.onerror = () => reject(
       new Error("No se encontró el marco: " + ruta)
     );
-    img.src = ruta + "?v=5";
+
+    img.src = ruta + "?v=6";
   });
 }
 
@@ -265,6 +304,7 @@ function detenerCamara() {
     camara.getTracks().forEach(t => t.stop());
     camara = null;
   }
+
   video.srcObject = null;
 }
 
@@ -281,6 +321,7 @@ async function elegir(tipo) {
   visible("escenario", true);
   visible("qrVista", false);
   controles("");
+
   mensaje.textContent = "Preparando cámara...";
 
   try {
@@ -316,18 +357,20 @@ async function elegir(tipo) {
 
     fase = "camara";
     controles("camara");
+
     mensaje.textContent = "¡Ubícate dentro del marco!";
 
   } catch (error) {
     mensaje.textContent =
       "No se pudo iniciar: " + error.message;
+
     console.error(error);
     controles("");
   }
 }
 
 function dibujarFoto(foto, zona) {
-  if (!foto || !foto.width || !foto.height) return;
+  if (!foto || !foto.width && !foto.videoWidth) return;
 
   const [px, py, pw, ph] = zona;
 
@@ -336,10 +379,11 @@ function dibujarFoto(foto, zona) {
   const w = pw * lienzo.width;
   const h = ph * lienzo.height;
 
-  const iw = foto.width;
-  const ih = foto.height;
+  const iw = foto.videoWidth || foto.width;
+  const ih = foto.videoHeight || foto.height;
 
   const escala = Math.max(w / iw, h / ih);
+
   const sw = w / escala;
   const sh = h / escala;
   const sx = (iw - sw) / 2;
@@ -347,10 +391,11 @@ function dibujarFoto(foto, zona) {
 
   ctx.save();
 
-  // Efecto espejo y filtro vintage.
   ctx.translate(x + w, y);
   ctx.scale(-1, 1);
-  ctx.filter = "sepia(25%) contrast(108%) saturate(85%)";
+
+  ctx.filter =
+    "sepia(25%) contrast(108%) saturate(85%)";
 
   ctx.drawImage(
     foto,
@@ -364,24 +409,34 @@ function dibujarFoto(foto, zona) {
 function dibujarEscena() {
   if (!marco || !lienzo.width) return;
 
-  ctx.clearRect(0, 0, lienzo.width, lienzo.height);
+  ctx.clearRect(
+    0, 0, lienzo.width, lienzo.height
+  );
+
   ctx.fillStyle = "#100719";
-  ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+
+  ctx.fillRect(
+    0, 0, lienzo.width, lienzo.height
+  );
 
   const espacios = zonas[modo];
 
   espacios.forEach((zona, i) => {
     if (capturas[i]) {
       dibujarFoto(capturas[i], zona);
-    } else if (fase === "camara" &&
-               video.readyState >= 2) {
+    } else if (
+      fase === "camara" &&
+      video.readyState >= 2
+    ) {
       dibujarFoto(video, zona);
     }
   });
 
-  // Marco por encima de la cámara y las fotos.
   ctx.drawImage(
-    marco, 0, 0, lienzo.width, lienzo.height
+    marco,
+    0, 0,
+    lienzo.width,
+    lienzo.height
   );
 }
 
@@ -389,17 +444,47 @@ function animar() {
   if (fase === "camara" || fase === "foto") {
     dibujarEscena();
   }
+
   requestAnimationFrame(animar);
 }
+
 requestAnimationFrame(animar);
 
 function esperar(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise(resolve =>
+    setTimeout(resolve, ms)
+  );
 }
 
-async function contar(actual) {
-  for (let n = 3; n >= 1; n--) {
+// Cuenta regresiva retro.
+// Entre fotos aparece CAMBIA DE POSE.
+async function contar(actual, cambioDePose = false) {
+
+  if (cambioDePose) {
+    cuenta.style.fontSize =
+      "clamp(38px, 9vw, 65px)";
+
+    cuenta.style.fontWeight = "900";
+    cuenta.style.color = "#ffffff";
+    cuenta.style.textAlign = "center";
+    cuenta.style.padding = "12px";
+    cuenta.style.lineHeight = "1.1";
+
+    cuenta.style.textShadow =
+      "0 0 12px #ff00c8, " +
+      "0 0 28px #ff00c8, " +
+      "0 0 45px #ff00c8";
+
+    cuenta.textContent = "¡CAMBIA DE POSE!";
+
+    await esperar(1000);
+  }
+
+  cuenta.style.fontSize = "95px";
+
+  for (let n = 4; n >= 1; n--) {
     if (actual !== sesion) return false;
+
     cuenta.textContent = n;
     await esperar(1000);
   }
@@ -412,11 +497,15 @@ async function contar(actual) {
 
 function capturarFotograma() {
   const copia = document.createElement("canvas");
+
   copia.width = video.videoWidth;
   copia.height = video.videoHeight;
 
   copia.getContext("2d").drawImage(
-    video, 0, 0, copia.width, copia.height
+    video,
+    0, 0,
+    copia.width,
+    copia.height
   );
 
   return copia;
@@ -426,6 +515,7 @@ async function tomarFotos() {
   if (ocupado || fase !== "camara") return;
 
   ocupado = true;
+
   const actual = sesion;
   const total = modo === "individual" ? 1 : 4;
 
@@ -436,22 +526,21 @@ async function tomarFotos() {
       if (actual !== sesion) return;
 
       mensaje.textContent =
-        "Fotografía " + (i + 1) + " de " + total;
+        "Fotografía " + (i + 1) +
+        " de " + total;
 
-      const continuar = await contar(actual);
+      const continuar = await contar(
+        actual,
+        modo === "cuatro" && i > 0
+      );
+
       if (!continuar) return;
 
       capturas.push(capturarFotograma());
-
-      if (i < total - 1) {
-        mensaje.textContent = "¡Cambia de pose!";
-        await esperar(650);
-      }
     }
 
     if (actual !== sesion) return;
 
-    // Congelamos el resultado en el mismo lienzo.
     fase = "foto";
     dibujarEscena();
 
@@ -461,11 +550,14 @@ async function tomarFotos() {
 
     detenerCamara();
     controles("foto");
-    mensaje.textContent = "¡Así quedó tu fotografía!";
+
+    mensaje.textContent =
+      "¡Así quedó tu fotografía!";
 
   } catch (error) {
     mensaje.textContent = error.message;
     console.error(error);
+
   } finally {
     ocupado = false;
     document.getElementById("tomar").disabled = false;
@@ -476,9 +568,11 @@ function mostrarQR() {
   if (!archivoFinal) return;
 
   fase = "qr";
+
   visible("escenario", false);
   visible("qrVista", true);
   controles("qr");
+
   mensaje.textContent =
     "El QR se activará al conectar Google Drive.";
 }
@@ -487,9 +581,12 @@ function descargar() {
   if (!archivoFinal) return;
 
   const a = document.createElement("a");
+
   a.href = archivoFinal;
+
   a.download =
-    "NaLu35_" + modo + "_" + Date.now() + ".jpg";
+    "NaLu35_" + modo +
+    "_" + Date.now() + ".jpg";
 
   document.body.appendChild(a);
   a.click();
@@ -512,9 +609,11 @@ function reiniciar() {
   visible("escenario", false);
   visible("qrVista", false);
   visible("menu", true);
+
   controles("");
 }
 </script>
 
 </body>
 </html>
+
