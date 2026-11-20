@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <title>NaLu's 35 Photobooth</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 20px;
+      background: #11051e;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 12px 0 4px;
+      color: #ff36c7;
+      font-size: 36px;
+      text-shadow: 0 0 15px #ff36c7;
+    }
+
+    .subtitulo {
+      color: #00f5ff;
+      letter-spacing: 3px;
+      font-weight: bold;
+    }
+
+    .camara {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      margin: 20px auto;
+      border: 5px solid #00f5ff;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 0 25px #00f5ff66;
+    }
+
+    video {
+      display: block;
+      width: 100%;
+      transform: scaleX(-1);
+      filter:
+        sepia(0.25)
+        contrast(1.08)
+        saturate(0.85);
+    }
+
+    #contador {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 100px;
+      font-weight: bold;
+      color: #ffff00;
+      text-shadow: 0 0 20px #ff36c7;
+      pointer-events: none;
+    }
+
+    button {
+      padding: 16px 30px;
+      border: none;
+      border-radius: 12px;
+      background: #ff36c7;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ff36c777;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #estado {
+      margin: 15px auto;
+      max-width: 480px;
+      font-size: 15px;
+    }
+
+    #resultado {
+      display: none;
+      width: 100%;
+      max-width: 480px;
+      margin: 20px auto;
+      border: 4px solid #ff36c7;
+      border-radius: 15px;
+    }
+
+    canvas {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>NaLu's 35</h1>
+  <p class="subtitulo">PHOTOBOOTH RETRO</p>
+
+  <div class="camara">
+    <video
+      id="video"
+      autoplay
+      playsinline
+      muted>
+    </video>
+
+    <div id="contador"></div>
+  </div>
+
+  <button id="botonFoto" disabled>
+    ¡TOMAR FOTO!
+  </button>
+
+  <p id="estado">Iniciando cámara...</p>
+
+  <img id="resultado" alt="Fotografía capturada">
+
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const contador = document.getElementById('contador');
+    const estado = document.getElementById('estado');
+    const botonFoto = document.getElementById('botonFoto');
+    const resultado = document.getElementById('resultado');
+
+    const FILTRO_VINTAGE =
+      'sepia(0.25) contrast(1.08) saturate(0.85)';
+
+    async function iniciarCamara() {
+      try {
+        const stream =
+          await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: 'user'
+            },
+            audio: false
+          });
+
+        video.srcObject = stream;
+        await video.play();
+
+        estado.textContent = '¡Cámara lista!';
+        botonFoto.disabled = false;
+
+      } catch (error) {
+        estado.textContent =
+          'Error de cámara: ' + error.message;
+      }
+    }
+
+    function esperar(ms) {
+      return new Promise(resolve =>
+        setTimeout(resolve, ms)
+      );
+    }
+
+    async function tomarFoto() {
+      if (!video.videoWidth) {
+        estado.textContent =
+          'La cámara todavía no está lista.';
+        return;
+      }
+
+      botonFoto.disabled = true;
+      resultado.style.display = 'none';
+      estado.textContent = '¡Prepárate!';
+
+      for (let i = 3; i > 0; i--) {
+        contador.textContent = i;
+        await esperar(1000);
+      }
+
+      contador.textContent = '';
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const ctx = canvas.getContext('2d');
+
+      ctx.save();
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.filter = FILTRO_VINTAGE;
+
+      ctx.drawImage(
+        video,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      ctx.restore();
+
+      const imagen =
+        canvas.toDataURL('image/jpeg', 0.9);
+
+      resultado.src = imagen;
+      resultado.style.display = 'block';
+
+      estado.textContent =
+        '¡Fotografía tomada correctamente!';
+
+      botonFoto.disabled = false;
+    }
+
+    botonFoto.addEventListener('click', tomarFoto);
+
+    iniciarCamara();
+  </script>
+
+</body>
+</html>
